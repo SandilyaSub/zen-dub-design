@@ -1,7 +1,8 @@
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import path from 'path'
+import { fileURLToPath, URL } from 'node:url'
 import { componentTagger } from "lovable-tagger"
 
 export default defineConfig(({ mode }) => ({
@@ -15,7 +16,7 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": resolve(__dirname, "./src"),
+      "@": path.resolve(path.dirname(fileURLToPath(import.meta.url)), "./src"),
     },
   },
 }))
