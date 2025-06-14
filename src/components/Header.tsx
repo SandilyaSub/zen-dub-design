@@ -1,4 +1,3 @@
-
 import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { Translate } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,7 +6,7 @@ import { useSession } from '../context/SessionContext';
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentStep, resetSession } = useSession();
+  const { resetSession } = useSession();
 
   const navigationItems = [
     { path: '/', label: 'Input', step: 'input' },

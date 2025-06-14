@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -12,7 +11,7 @@ import {
   TextField,
   LinearProgress,
   Chip,
-  Grid,
+  Grid2 as Grid,
   FormControl,
   InputLabel,
   Select,
@@ -108,7 +107,7 @@ const HomePage = () => {
       </Box>
 
       <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
@@ -246,7 +245,7 @@ const HomePage = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
