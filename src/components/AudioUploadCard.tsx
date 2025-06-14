@@ -16,17 +16,27 @@ import {
   CheckCircle 
 } from '@mui/icons-material';
 
-const AudioUploadCard = () => {
+interface AudioUploadCardProps {
+  onUpload: (fileName: string) => void;
+  isActive: boolean;
+  isCompleted: boolean;
+}
+
+const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, isCompleted }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploaded, setIsUploaded] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = () => {
+    setIsUploading(true);
+    setUploadProgress(0);
+    
     // Simulate upload progress
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setIsUploaded(true);
+          setIsUploading(false);
+          onUpload('audio_sample.mp3');
           return 100;
         }
         return prev + 10;
@@ -34,13 +44,18 @@ const AudioUploadCard = () => {
     }, 200);
   };
 
+  const cardOpacity = isActive ? 1 : isCompleted ? 0.8 : 0.6;
+  const cardBorder = isActive ? '2px solid #1976d2' : isCompleted ? '2px solid #4caf50' : '1px solid #e3f2fd';
+
   return (
     <Card 
       elevation={2}
       sx={{ 
         borderRadius: 3,
         background: 'linear-gradient(145deg, #f8f9ff 0%, #ffffff 100%)',
-        border: '1px solid #e3f2fd'
+        border: cardBorder,
+        opacity: cardOpacity,
+        transition: 'all 0.3s ease'
       }}
     >
       <CardContent sx={{ p: 4 }}>
@@ -53,7 +68,7 @@ const AudioUploadCard = () => {
           </Typography>
         </Box>
 
-        {!isUploaded ? (
+        {!isCompleted ? (
           <Box sx={{ textAlign: 'center' }}>
             <Box 
               sx={{ 
@@ -82,6 +97,7 @@ const AudioUploadCard = () => {
                 variant="contained"
                 startIcon={<AudioFile />}
                 onClick={handleFileUpload}
+                disabled={isUploading || !isActive}
                 sx={{ 
                   borderRadius: 2,
                   textTransform: 'none',
@@ -93,6 +109,7 @@ const AudioUploadCard = () => {
               <Button
                 variant="outlined"
                 startIcon={<Mic />}
+                disabled={isUploading || !isActive}
                 sx={{ 
                   borderRadius: 2,
                   textTransform: 'none',
@@ -103,7 +120,7 @@ const AudioUploadCard = () => {
               </Button>
             </Box>
 
-            {uploadProgress > 0 && uploadProgress < 100 && (
+            {isUploading && (
               <Box sx={{ mt: 3 }}>
                 <LinearProgress 
                   variant="determinate" 

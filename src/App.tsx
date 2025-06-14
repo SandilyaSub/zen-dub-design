@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, Box, Grid } from '@mui/material';
 import Header from './components/Header';
@@ -43,7 +43,30 @@ const theme = createTheme({
   },
 });
 
+export type AppStep = 'upload' | 'translate' | 'results';
+
 function App() {
+  const [currentStep, setCurrentStep] = useState<AppStep>('upload');
+  const [audioFile, setAudioFile] = useState<string | null>(null);
+  const [sourceLanguage, setSourceLanguage] = useState('english');
+  const [targetLanguage, setTargetLanguage] = useState('hindi');
+  const [translationComplete, setTranslationComplete] = useState(false);
+
+  const handleAudioUpload = (fileName: string) => {
+    setAudioFile(fileName);
+    setCurrentStep('translate');
+  };
+
+  const handleTranslationStart = () => {
+    setCurrentStep('results');
+    setTranslationComplete(true);
+  };
+
+  const handleLanguageChange = (source: string, target: string) => {
+    setSourceLanguage(source);
+    setTargetLanguage(target);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -53,13 +76,30 @@ function App() {
         <Container maxWidth="lg" sx={{ py: 4 }}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
-              <AudioUploadCard />
+              <AudioUploadCard 
+                onUpload={handleAudioUpload}
+                isActive={currentStep === 'upload'}
+                isCompleted={audioFile !== null}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TranslationCard />
+              <TranslationCard 
+                onTranslate={handleTranslationStart}
+                onLanguageChange={handleLanguageChange}
+                isActive={currentStep === 'translate'}
+                isDisabled={!audioFile}
+                sourceLanguage={sourceLanguage}
+                targetLanguage={targetLanguage}
+              />
             </Grid>
             <Grid item xs={12}>
-              <ResultsCard />
+              <ResultsCard 
+                isActive={currentStep === 'results'}
+                sourceLanguage={sourceLanguage}
+                targetLanguage={targetLanguage}
+                audioFile={audioFile}
+                isVisible={translationComplete}
+              />
             </Grid>
           </Grid>
         </Container>

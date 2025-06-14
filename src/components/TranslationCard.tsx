@@ -15,14 +15,26 @@ import {
 } from '@mui/material';
 import { 
   Translate, 
-  PlayArrow, 
-  Download,
   SwapHoriz 
 } from '@mui/icons-material';
 
-const TranslationCard = () => {
-  const [sourceLanguage, setSourceLanguage] = useState('english');
-  const [targetLanguage, setTargetLanguage] = useState('hindi');
+interface TranslationCardProps {
+  onTranslate: () => void;
+  onLanguageChange: (source: string, target: string) => void;
+  isActive: boolean;
+  isDisabled: boolean;
+  sourceLanguage: string;
+  targetLanguage: string;
+}
+
+const TranslationCard: React.FC<TranslationCardProps> = ({ 
+  onTranslate, 
+  onLanguageChange, 
+  isActive, 
+  isDisabled, 
+  sourceLanguage, 
+  targetLanguage 
+}) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const languages = [
@@ -39,14 +51,16 @@ const TranslationCard = () => {
     // Simulate processing
     setTimeout(() => {
       setIsProcessing(false);
+      onTranslate();
     }, 3000);
   };
 
   const swapLanguages = () => {
-    const temp = sourceLanguage;
-    setSourceLanguage(targetLanguage);
-    setTargetLanguage(temp);
+    onLanguageChange(targetLanguage, sourceLanguage);
   };
+
+  const cardOpacity = isDisabled ? 0.5 : isActive ? 1 : 0.8;
+  const cardBorder = isActive ? '2px solid #f57c00' : '1px solid #fff3c4';
 
   return (
     <Card 
@@ -54,7 +68,9 @@ const TranslationCard = () => {
       sx={{ 
         borderRadius: 3,
         background: 'linear-gradient(145deg, #fff8e1 0%, #ffffff 100%)',
-        border: '1px solid #fff3c4'
+        border: cardBorder,
+        opacity: cardOpacity,
+        transition: 'all 0.3s ease'
       }}
     >
       <CardContent sx={{ p: 4 }}>
@@ -68,12 +84,12 @@ const TranslationCard = () => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled={isDisabled}>
             <InputLabel>Source Language</InputLabel>
             <Select
               value={sourceLanguage}
               label="Source Language"
-              onChange={(e) => setSourceLanguage(e.target.value)}
+              onChange={(e) => onLanguageChange(e.target.value, targetLanguage)}
               sx={{ borderRadius: 2 }}
             >
               {languages.map((lang) => (
@@ -86,6 +102,7 @@ const TranslationCard = () => {
 
           <Button
             onClick={swapLanguages}
+            disabled={isDisabled}
             sx={{ 
               minWidth: 'auto',
               p: 1.5,
@@ -95,12 +112,12 @@ const TranslationCard = () => {
             <SwapHoriz />
           </Button>
 
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled={isDisabled}>
             <InputLabel>Target Language</InputLabel>
             <Select
               value={targetLanguage}
               label="Target Language"
-              onChange={(e) => setTargetLanguage(e.target.value)}
+              onChange={(e) => onLanguageChange(sourceLanguage, e.target.value)}
               sx={{ borderRadius: 2 }}
             >
               {languages.map((lang) => (
@@ -119,7 +136,7 @@ const TranslationCard = () => {
             variant="contained"
             startIcon={<Translate />}
             onClick={handleTranslate}
-            disabled={isProcessing}
+            disabled={isProcessing || isDisabled}
             sx={{ 
               borderRadius: 2,
               textTransform: 'none',
