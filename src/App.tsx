@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Box, Grid } from '@mui/material';
+import { CssBaseline, Container, Box, Grid2 } from '@mui/material';
 import Header from './components/Header';
 import AudioUploadCard from './components/AudioUploadCard';
 import TranslationCard from './components/TranslationCard';
@@ -10,26 +10,26 @@ import ResultsCard from './components/ResultsCard';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#6366f1',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#10b981',
     },
     background: {
-      default: '#f5f7fa',
+      default: '#f8fafc',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
-      fontWeight: 300,
+      fontWeight: 600,
     },
     h6: {
       fontWeight: 500,
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 8,
   },
   components: {
     MuiButton: {
@@ -37,6 +37,15 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: 8,
+          fontWeight: 500,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          borderRadius: 12,
         },
       },
     },
@@ -67,22 +76,30 @@ function App() {
     setTargetLanguage(target);
   };
 
+  const handleStartOver = () => {
+    setCurrentStep('upload');
+    setAudioFile(null);
+    setTranslationComplete(false);
+    setSourceLanguage('english');
+    setTargetLanguage('hindi');
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f7fa' }}>
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
         <Header />
         
         <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
+          <Grid2 container spacing={3}>
+            <Grid2 xs={12} md={6}>
               <AudioUploadCard 
                 onUpload={handleAudioUpload}
                 isActive={currentStep === 'upload'}
                 isCompleted={audioFile !== null}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Grid2>
+            <Grid2 xs={12} md={6}>
               <TranslationCard 
                 onTranslate={handleTranslationStart}
                 onLanguageChange={handleLanguageChange}
@@ -91,17 +108,17 @@ function App() {
                 sourceLanguage={sourceLanguage}
                 targetLanguage={targetLanguage}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 xs={12}>
               <ResultsCard 
                 isActive={currentStep === 'results'}
                 sourceLanguage={sourceLanguage}
                 targetLanguage={targetLanguage}
-                audioFile={audioFile}
                 isVisible={translationComplete}
+                onStartOver={handleStartOver}
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Container>
       </Box>
     </ThemeProvider>

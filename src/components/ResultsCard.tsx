@@ -1,5 +1,4 @@
 
-import React from 'react';
 import {
   Card,
   CardContent,
@@ -14,54 +13,70 @@ import {
   PlayArrow, 
   Download,
   VolumeUp,
-  Subtitles 
+  CheckCircle 
 } from '@mui/icons-material';
 
 interface ResultsCardProps {
   isActive: boolean;
   sourceLanguage: string;
   targetLanguage: string;
-  audioFile: string | null;
   isVisible: boolean;
+  onStartOver: () => void;
 }
 
 const ResultsCard: React.FC<ResultsCardProps> = ({ 
   isActive, 
   sourceLanguage, 
   targetLanguage, 
-  audioFile, 
-  isVisible 
+  isVisible,
+  onStartOver
 }) => {
   const sampleTranslations = {
     english: "Hello, welcome to our speech translation demo. This is a sample text that will be translated.",
     hindi: "नमस्ते, हमारे स्पीच ट्रांसलेशन डेमो में आपका स्वागत है। यह एक नमूना टेक्स्ट है जिसका अनुवाद किया जाएगा।",
-    spanish: "Hola, bienvenido a nuestra demostración de traducción de voz. Este es un texto de muestra que será traducido.",
-    french: "Bonjour, bienvenue dans notre démonstration de traduction vocale. Ceci est un texte d'exemple qui sera traduit.",
-    german: "Hallo, willkommen zu unserer Sprachübersetzungs-Demo. Dies ist ein Beispieltext, der übersetzt wird.",
-    chinese: "你好，欢迎来到我们的语音翻译演示。这是一个将被翻译的示例文本。"
+    spanish: "Hola, bienvenido a nuestra demostración de traducción de voz.",
+    french: "Bonjour, bienvenue dans notre démonstration de traduction vocale.",
+    german: "Hallo, willkommen zu unserer Sprachübersetzungs-Demo.",
+    chinese: "你好，欢迎来到我们的语音翻译演示。"
   };
 
   const originalText = sampleTranslations[sourceLanguage as keyof typeof sampleTranslations] || sampleTranslations.english;
   const translatedText = sampleTranslations[targetLanguage as keyof typeof sampleTranslations] || sampleTranslations.hindi;
 
-  const cardBorder = isActive ? '2px solid #7b1fa2' : '1px solid #e1bee7';
+  const stepNumber = 3;
+  const isStepCompleted = isVisible;
 
   if (!isVisible) {
     return (
       <Card 
-        elevation={2}
         sx={{ 
-          borderRadius: 3,
-          background: 'linear-gradient(145deg, #f3e5f5 0%, #ffffff 100%)',
-          border: '1px solid #e1bee7',
-          opacity: 0.5
+          border: '1px solid #e2e8f0',
+          opacity: 0.4
         }}
       >
-        <CardContent sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary">
-            Translation Results
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, justifyContent: 'center' }}>
+            <Box 
+              sx={{ 
+                width: 32, 
+                height: 32, 
+                borderRadius: '50%',
+                backgroundColor: '#94a3b8',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.875rem',
+                fontWeight: 600
+              }}
+            >
+              {stepNumber}
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#64748b' }}>
+              Step 3: Results
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary">
             Complete the translation to see results here
           </Typography>
         </CardContent>
@@ -72,59 +87,65 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   return (
     <Fade in={isVisible} timeout={500}>
       <Card 
-        elevation={2}
         sx={{ 
-          borderRadius: 3,
-          background: 'linear-gradient(145deg, #f3e5f5 0%, #ffffff 100%)',
-          border: cardBorder,
-          transition: 'all 0.3s ease'
+          border: isActive ? '2px solid #10b981' : '1px solid #e2e8f0',
+          backgroundColor: '#f0fdf4'
         }}
       >
-        <CardContent sx={{ p: 4 }}>
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 500, color: '#7b1fa2' }}>
-              Translation Results
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Your translated audio is ready
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <Box 
+              sx={{ 
+                width: 32, 
+                height: 32, 
+                borderRadius: '50%',
+                backgroundColor: '#10b981',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <CheckCircle sx={{ fontSize: 18 }} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+              Step 3: Translation Complete
             </Typography>
           </Box>
 
+          <Typography variant="body1" sx={{ mb: 3, color: '#059669', fontWeight: 500 }}>
+            Translating from {sourceLanguage} to {targetLanguage}
+          </Typography>
+
           <Paper 
-            elevation={1} 
+            elevation={0} 
             sx={{ 
               p: 3, 
               mb: 3,
-              borderRadius: 2,
-              backgroundColor: '#fafafa'
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Subtitles color="primary" />
-              <Typography variant="subtitle2" color="primary">
-                Original Transcript ({sourceLanguage})
-              </Typography>
-            </Box>
+            <Typography variant="subtitle2" sx={{ mb: 2, color: '#374151', fontWeight: 500 }}>
+              Original Transcript
+            </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
               "{originalText}"
             </Typography>
           </Paper>
 
           <Paper 
-            elevation={1} 
+            elevation={0} 
             sx={{ 
               p: 3, 
               mb: 3,
-              borderRadius: 2,
-              backgroundColor: '#f8f9fa'
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Subtitles color="secondary" />
-              <Typography variant="subtitle2" color="secondary">
-                Translated Text ({targetLanguage})
-              </Typography>
-            </Box>
+            <Typography variant="subtitle2" sx={{ mb: 2, color: '#374151', fontWeight: 500 }}>
+              Translation
+            </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
               "{translatedText}"
             </Typography>
@@ -132,40 +153,37 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
 
           <Divider sx={{ my: 3 }} />
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="outlined"
+                startIcon={<PlayArrow />}
+                size="small"
+              >
+                Play Original
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<VolumeUp />}
+                size="small"
+              >
+                Play Translation
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<Download />}
+                size="small"
+              >
+                Download
+              </Button>
+            </Box>
             <Button
               variant="contained"
-              startIcon={<PlayArrow />}
-              sx={{ 
-                borderRadius: 2,
-                textTransform: 'none',
-                px: 3
-              }}
+              onClick={onStartOver}
+              size="small"
+              sx={{ backgroundColor: '#6366f1' }}
             >
-              Play Original
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<VolumeUp />}
-              color="secondary"
-              sx={{ 
-                borderRadius: 2,
-                textTransform: 'none',
-                px: 3
-              }}
-            >
-              Play Translation
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<Download />}
-              sx={{ 
-                borderRadius: 2,
-                textTransform: 'none',
-                px: 3
-              }}
-            >
-              Download
+              Start Over
             </Button>
           </Box>
         </CardContent>

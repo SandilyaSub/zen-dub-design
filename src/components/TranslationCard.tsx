@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -11,11 +11,12 @@ import {
   MenuItem,
   Button,
   Divider,
-  Chip
+  TextField
 } from '@mui/material';
 import { 
   Translate, 
-  SwapHoriz 
+  SwapHoriz,
+  CheckCircle 
 } from '@mui/icons-material';
 
 interface TranslationCardProps {
@@ -36,6 +37,9 @@ const TranslationCard: React.FC<TranslationCardProps> = ({
   targetLanguage 
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [speakerCount, setSpeakerCount] = useState(1);
+  const [speakerGender, setSpeakerGender] = useState('Male');
+  const [speakerName, setSpeakerName] = useState('');
 
   const languages = [
     { code: 'english', name: 'English' },
@@ -48,119 +52,167 @@ const TranslationCard: React.FC<TranslationCardProps> = ({
 
   const handleTranslate = () => {
     setIsProcessing(true);
-    // Simulate processing
     setTimeout(() => {
       setIsProcessing(false);
       onTranslate();
-    }, 3000);
+    }, 2000);
   };
 
   const swapLanguages = () => {
     onLanguageChange(targetLanguage, sourceLanguage);
   };
 
-  const cardOpacity = isDisabled ? 0.5 : isActive ? 1 : 0.8;
-  const cardBorder = isActive ? '2px solid #f57c00' : '1px solid #fff3c4';
+  const stepNumber = 2;
+  const isStepActive = isActive;
+  const isStepCompleted = false;
 
   return (
     <Card 
-      elevation={2}
       sx={{ 
-        borderRadius: 3,
-        background: 'linear-gradient(145deg, #fff8e1 0%, #ffffff 100%)',
-        border: cardBorder,
-        opacity: cardOpacity,
+        border: isStepActive ? '2px solid #6366f1' : '1px solid #e2e8f0',
+        opacity: isDisabled ? 0.4 : isStepActive ? 1 : 0.6,
         transition: 'all 0.3s ease'
       }}
     >
-      <CardContent sx={{ p: 4 }}>
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 500, color: '#f57c00' }}>
-            Translation Settings
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Choose source and target languages
-          </Typography>
-        </Box>
-
+      <CardContent sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <FormControl fullWidth disabled={isDisabled}>
-            <InputLabel>Source Language</InputLabel>
-            <Select
-              value={sourceLanguage}
-              label="Source Language"
-              onChange={(e) => onLanguageChange(e.target.value, targetLanguage)}
-              sx={{ borderRadius: 2 }}
-            >
-              {languages.map((lang) => (
-                <MenuItem key={lang.code} value={lang.code}>
-                  {lang.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <Button
-            onClick={swapLanguages}
-            disabled={isDisabled}
+          <Box 
             sx={{ 
-              minWidth: 'auto',
-              p: 1.5,
-              borderRadius: 2
+              width: 32, 
+              height: 32, 
+              borderRadius: '50%',
+              backgroundColor: isStepCompleted ? '#10b981' : isStepActive ? '#6366f1' : '#94a3b8',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.875rem',
+              fontWeight: 600
             }}
           >
-            <SwapHoriz />
-          </Button>
+            {isStepCompleted ? <CheckCircle sx={{ fontSize: 18 }} /> : stepNumber}
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+            Step 2: Translation Settings
+          </Typography>
+        </Box>
 
-          <FormControl fullWidth disabled={isDisabled}>
-            <InputLabel>Target Language</InputLabel>
-            <Select
-              value={targetLanguage}
-              label="Target Language"
-              onChange={(e) => onLanguageChange(sourceLanguage, e.target.value)}
-              sx={{ borderRadius: 2 }}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 500 }}>
+            Target Language
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Translate to:
+          </Typography>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FormControl size="small" sx={{ minWidth: 120 }} disabled={isDisabled}>
+              <InputLabel>From</InputLabel>
+              <Select
+                value={sourceLanguage}
+                label="From"
+                onChange={(e) => onLanguageChange(e.target.value, targetLanguage)}
+              >
+                {languages.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Button
+              onClick={swapLanguages}
+              disabled={isDisabled}
+              size="small"
+              sx={{ minWidth: 'auto', p: 1 }}
             >
-              {languages.map((lang) => (
-                <MenuItem key={lang.code} value={lang.code}>
-                  {lang.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <SwapHoriz />
+            </Button>
+
+            <FormControl size="small" sx={{ minWidth: 120 }} disabled={isDisabled}>
+              <InputLabel>To</InputLabel>
+              <Select
+                value={targetLanguage}
+                label="To"
+                onChange={(e) => onLanguageChange(sourceLanguage, e.target.value)}
+              >
+                {languages.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
 
-        <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 2 }} />
 
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-          <Button
-            variant="contained"
-            startIcon={<Translate />}
-            onClick={handleTranslate}
-            disabled={isProcessing || isDisabled}
-            sx={{ 
-              borderRadius: 2,
-              textTransform: 'none',
-              px: 4,
-              py: 1.5,
-              background: 'linear-gradient(45deg, #ff6b6b, #ffd93d)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #ff5252, #ffcc02)'
-              }
-            }}
-          >
-            {isProcessing ? 'Processing...' : 'Start Translation'}
-          </Button>
-        </Box>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 500 }}>
+            Character Information
+          </Typography>
+          
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Number of Speakers:
+            </Typography>
+            <FormControl size="small" fullWidth disabled={isDisabled}>
+              <Select
+                value={speakerCount}
+                onChange={(e) => setSpeakerCount(Number(e.target.value))}
+              >
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
-        {isProcessing && (
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
-            <Chip 
-              label="AI is working on your translation..." 
-              color="primary" 
-              sx={{ animation: 'pulse 2s infinite' }}
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Speaker 1 Gender:
+            </Typography>
+            <FormControl size="small" fullWidth disabled={isDisabled}>
+              <Select
+                value={speakerGender}
+                onChange={(e) => setSpeakerGender(e.target.value)}
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Name (Optional):
+            </Typography>
+            <TextField
+              size="small"
+              fullWidth
+              placeholder="Enter name"
+              value={speakerName}
+              onChange={(e) => setSpeakerName(e.target.value)}
+              disabled={isDisabled}
             />
           </Box>
-        )}
+        </Box>
+
+        <Button
+          variant="contained"
+          startIcon={<Translate />}
+          onClick={handleTranslate}
+          disabled={isProcessing || isDisabled}
+          fullWidth
+          sx={{ 
+            py: 1.5,
+            fontWeight: 500
+          }}
+        >
+          {isProcessing ? 'Processing...' : 'Continue'}
+        </Button>
       </CardContent>
     </Card>
   );
