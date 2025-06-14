@@ -1,11 +1,14 @@
 
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Box } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import Header from './components/Header';
-import AudioUploadCard from './components/AudioUploadCard';
-import TranslationCard from './components/TranslationCard';
-import ResultsCard from './components/ResultsCard';
+import HomePage from './pages/HomePage';
+import TranscriptionPage from './pages/TranscriptionPage';
+import TransliterationPage from './pages/TransliterationPage';
+import TranslationPage from './pages/TranslationPage';
+import SynthesisPage from './pages/SynthesisPage';
+import SessionProvider from './context/SessionContext';
 
 const theme = createTheme({
   palette: {
@@ -52,80 +55,22 @@ const theme = createTheme({
   },
 });
 
-export type AppStep = 'upload' | 'translate' | 'results';
-
 function App() {
-  const [currentStep, setCurrentStep] = useState<AppStep>('upload');
-  const [audioFile, setAudioFile] = useState<string | null>(null);
-  const [sourceLanguage, setSourceLanguage] = useState('english');
-  const [targetLanguage, setTargetLanguage] = useState('hindi');
-  const [translationComplete, setTranslationComplete] = useState(false);
-
-  console.log('App rendering with currentStep:', currentStep);
-
-  const handleAudioUpload = (fileName: string) => {
-    console.log('Audio uploaded:', fileName);
-    setAudioFile(fileName);
-    setCurrentStep('translate');
-  };
-
-  const handleTranslationStart = () => {
-    console.log('Translation started');
-    setCurrentStep('results');
-    setTranslationComplete(true);
-  };
-
-  const handleLanguageChange = (source: string, target: string) => {
-    console.log('Language changed:', source, 'to', target);
-    setSourceLanguage(source);
-    setTargetLanguage(target);
-  };
-
-  const handleStartOver = () => {
-    console.log('Starting over');
-    setCurrentStep('upload');
-    setAudioFile(null);
-    setTranslationComplete(false);
-    setSourceLanguage('english');
-    setTargetLanguage('hindi');
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-        <Header />
-        
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: 3,
-            mb: 3
-          }}>
-            <AudioUploadCard 
-              onUpload={handleAudioUpload}
-              isActive={currentStep === 'upload'}
-              isCompleted={audioFile !== null}
-            />
-            <TranslationCard 
-              onTranslate={handleTranslationStart}
-              onLanguageChange={handleLanguageChange}
-              isActive={currentStep === 'translate'}
-              isDisabled={!audioFile}
-              sourceLanguage={sourceLanguage}
-              targetLanguage={targetLanguage}
-            />
-          </Box>
-          <ResultsCard 
-            isActive={currentStep === 'results'}
-            sourceLanguage={sourceLanguage}
-            targetLanguage={targetLanguage}
-            isVisible={translationComplete}
-            onStartOver={handleStartOver}
-          />
-        </Container>
-      </Box>
+      <SessionProvider>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/transcription" element={<TranscriptionPage />} />
+            <Route path="/transliteration" element={<TransliterationPage />} />
+            <Route path="/translation" element={<TranslationPage />} />
+            <Route path="/synthesis" element={<SynthesisPage />} />
+          </Routes>
+        </Router>
+      </SessionProvider>
     </ThemeProvider>
   );
 }
