@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": resolve(import.meta.url, "./src"),
+      "@": resolve(__dirname, "./src"),
     },
   },
 }))
