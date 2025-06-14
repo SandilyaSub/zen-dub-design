@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indic-Translator | Speech-to-Speech Translation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Indic-Translator</h1>
+            <p>Speech-to-Speech Translation for Indian Languages</p>
+        </header>
+
+        <!-- Session download container - initially hidden -->
+        <div id="session-download-container" class="session-tools hidden">
+            <button id="download-session-btn" class="btn download-btn">
+                <i class="fas fa-download"></i> Download Session Files
+            </button>
+        </div>
+
+        <main>
+            <div class="workflow-container">
+                <!-- Step 1: Input -->
+                <section id="step-input" class="workflow-step active">
+                    <h2>Step 1: Input</h2>
+                    <div class="card">
+                        <div class="input-methods">
+                            <div class="input-method" id="upload-method">
+                                <h3><i class="fas fa-file-audio"></i> Upload Audio</h3>
+                                <p>Upload an MP3 or WAV file</p>
+                                <div class="file-upload">
+                                    <input type="file" id="audio-file" accept=".mp3,.wav" class="file-input">
+                                    <label for="audio-file" class="file-label">Choose File</label>
+                                    <span id="file-name">No file chosen</span>
+                                </div>
+                                <button id="upload-btn" class="btn primary-btn" disabled>Upload</button>
+                            </div>
+                            
+                            <div class="divider">OR</div>
+                            
+                            <div class="input-method" id="video-url-method">
+                                <h3><i class="fas fa-video"></i> Video URL</h3>
+                                <p>Extract audio from YouTube or Instagram</p>
+                                <div class="url-input-container">
+                                    <input type="text" id="video-url" class="form-control" placeholder="Paste YouTube or Instagram URL">
+                                    <button id="process-video-btn" class="btn primary-btn">
+                                        <i class="fas fa-download"></i> Upload Video
+                                    </button>
+                                </div>
+                                <div class="url-examples">
+                                    <small class="form-text text-muted">
+                                        Examples: https://youtube.com/watch?v=XXXX or https://instagram.com/p/XXXX
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="audio-player hidden" id="audio-player-container">
+                            <h3>Preview Audio</h3>
+                            <audio id="audio-player" controls></audio>
+                        </div>
+                        
+                        <!-- Target Language (Moved up) -->
+                        <div class="target-language">
+                            <h3>Target Language</h3>
+                            <div class="form-group">
+                                <label for="target-language-select">Translate to:</label>
+                                <select id="target-language-select" class="form-control">
+                                    {% for language in output_languages %}
+                                    <option value="{{ language }}">{{ language|capitalize }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Audio Options -->
+                        <div class="audio-options">
+                            <h3>Audio Options</h3>
+                            <div class="form-check">
+                                <!-- Hidden input to ensure a value is always sent -->
+                                <input type="hidden" name="preserve_background_music" value="false">
+                                <!-- Checkbox will override the value when checked -->
+                                <input type="checkbox" class="form-check-input" id="preserve-background-music" name="preserve_background_music" value="true">
+                                <label class="form-check-label" for="preserve-background-music">
+                                    Preserve background music
+                                </label>
+                                <small class="form-text text-muted">
+                                    ( When enabled, background music from the original audio will be added to the output audio file )
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="character-info">
+                            <h3>Character Information</h3>
+                            <div class="form-group">
+                                <label for="num-speakers">Number of Speakers:</label>
+                                <select id="num-speakers" class="form-control">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                            
+                            <div id="speaker-details-container">
+                                <!-- Speaker details will be dynamically generated here -->
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="continue-btn" class="btn primary-btn" disabled>Continue</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Step 2: Transcription -->
+                <section id="step-transcription" class="workflow-step">
+                    <h2>Step 2: Transcription</h2>
+                    <div class="card">
+                        <div class="detected-language">
+                            <h3>Detected Language: <span id="detected-language">Processing...</span></h3>
+                        </div>
+                        
+                        <div class="transcription-container">
+                            <h3>Transcription</h3>
+                            
+                            <!-- Original transcription -->
+                            <div class="card mb-3">
+                                <div class="card-header" id="transcription-header">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button">
+                                            Original Transcription
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <textarea id="transcription-text" class="form-control" rows="5" placeholder="Transcription will appear here..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Diarization Editor -->
+                            <div class="card mb-3">
+                                <div class="card-header" id="diarization-header">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button">
+                                            Diarization Editor
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="diarization-editor">
+                                    <div class="card-body">
+                                        <!-- Diarization editor will be rendered here by JavaScript -->
+                                    </div>
+                                    <div class="card-footer text-right">
+                                        <button id="save-diarization-btn" class="btn btn-sm btn-primary">Save Edits</button>
+                                        <small class="text-muted ml-2">Changes will also be saved when you click "Save & Continue"</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="back-to-input-btn" class="btn secondary-btn">Back</button>
+                            <button id="save-transcription-btn" class="btn primary-btn">Save & Continue</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Step 3: Translation -->
+                <section id="step-translation" class="workflow-step">
+                    <h2>Step 3: Translation</h2>
+                    <div class="card">
+                        <h3 id="translation-heading">Translating from <span id="source-language">Auto</span> to <span id="target-language">Hindi</span></h3>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <label for="translation-text" class="form-label">Translation</label>
+                                <textarea id="translation-text" class="form-control mb-3" rows="6" readonly></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Translation Editor -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Translation Editor</h5>
+                                <p class="text-muted small mb-0">Edit individual translation segments below</p>
+                            </div>
+                            <div class="card-body">
+                                <div id="translation-editor-container">
+                                    <!-- Translation segments will be loaded here -->
+                                    <div class="loading">Loading translation data...</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button id="back-to-transcription-btn" class="btn btn-secondary">Back</button>
+                            <button id="save-translation-btn" class="btn btn-primary">Save & Continue</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Step 4: Synthesis -->
+                <section id="step-synthesis" class="workflow-step">
+                    <h2>Step 4: Speech Synthesis</h2>
+                    <div class="card">
+                        <div class="synthesis-info">
+                            <h3>Generating Speech in <span id="synthesis-language">Hindi</span></h3>
+                            <div id="synthesis-progress" class="progress-container hidden">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">Processing...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="audio-player hidden" id="output-audio-player-container">
+                            <h3>Translated Audio</h3>
+                            <audio id="output-audio-player" controls></audio>
+                            <div class="download-container">
+                                <a id="download-link" class="btn download-btn" download>
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="back-to-translation-btn" class="btn secondary-btn">Back</button>
+                            <button id="synthesize-btn" class="btn primary-btn">Generate Speech</button>
+                            <button id="validate-btn" class="btn primary-btn hidden">Validate</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Step 5: Validation -->
+                <section id="step-validation" class="workflow-step">
+                    <h2>Step 5: Validation</h2>
+                    <div class="card">
+                        <!-- Similarity Score section removed as requested -->
+                        
+                        <!-- Audio Extraction Metrics -->
+                        <div class="validation-result" id="audio-extraction-metrics">
+                            <h3>Audio Extraction Score</h3>
+                            <div class="score-container">
+                                <div class="score-circle">
+                                    <div class="score-text" id="audio-extraction-score">--</div>
+                                </div>
+                                <div class="score-label">out of 100</div>
+                            </div>
+                            <p class="score-explanation">This score represents the quality of audio extraction based on BERT and BLEU metrics.</p>
+                            
+                            <div class="metrics-breakdown">
+                                <div class="metric-row">
+                                    <span class="metric-name">BERT Score (weight: 0.7)</span>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" id="bert-progress" style="width: 0%"></div>
+                                    </div>
+                                    <span class="metric-value" id="bert-score">0/100</span>
+                                </div>
+                                
+                                <div class="metric-row">
+                                    <span class="metric-name">BLEU Score (weight: 0.3)</span>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" id="bleu-progress" style="width: 0%"></div>
+                                    </div>
+                                    <span class="metric-value" id="bleu-score">0/100</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="comparison-container">
+                            <div class="comparison-item">
+                                <h3>Original Audio</h3>
+                                <audio id="comparison-input-audio" controls></audio>
+                            </div>
+                            <div class="comparison-item">
+                                <h3>Translated Audio</h3>
+                                <audio id="comparison-output-audio" controls></audio>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="back-to-synthesis-btn" class="btn secondary-btn">Back</button>
+                            <button id="start-over-btn" class="btn primary-btn">Start Over</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Indic-Translator | Speech-to-Speech Translation for Indian Languages</p>
+        </footer>
+    </div>
+    
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+        <div id="loading-stage-container">
+            <div id="loading-stage">Initializing</div>
+            <div id="loading-message">Starting process...</div>
+            <div id="loading-progress-container">
+                <div id="loading-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

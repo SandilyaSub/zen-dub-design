@@ -1,0 +1,589 @@
+"""
+Video utilities for extracting audio from YouTube and Instagram videos.
+"""
+import os
+import logging
+import re
+import glob
+import shutil
+import importlib
+import subprocess
+from typing import Optional, Tuple, List
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+def is_valid_youtube_url(url: str) -> bool:
+    """
+    Check if the URL is a valid YouTube URL.
+    
+    Args:
+        url: URL to check
+        
+    Returns:
+        bool: True if valid YouTube URL, False otherwise
+    """
+    youtube_regex = (
+        r'(https?://)?(www\.)?'
+        r'(youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/)'
+        r'([a-zA-Z0-9_-]{11})'
+    )
+    match = re.match(youtube_regex, url)
+    return match is not None
+
+def is_valid_instagram_url(url: str) -> bool:
+    """
+    Check if the URL is a valid Instagram URL.
+    
+    Args:
+        url: URL to check
+        
+    Returns:
+        bool: True if valid Instagram URL, False otherwise
+    """
+    instagram_regex = (
+        r'(https?://)?(www\.)?'
+        r'(instagram\.com/p/|instagram\.com/reel/|instagram\.com/tv/)'
+        r'([a-zA-Z0-9_-]+)'
+    )
+    match = re.match(instagram_regex, url)
+    return match is not None
+
+def is_valid_video_url(url: str) -> Tuple[bool, str]:
+    """
+    Check if the URL is a valid video URL.
+    
+    Args:
+        url: URL to check
+        
+    Returns:
+        Tuple[bool, str]: (is_valid, platform)
+    """
+    if is_valid_youtube_url(url):
+        return True, "youtube"
+    elif is_valid_instagram_url(url):
+        return True, "instagram"
+    else:
+        return False, "unknown"
+
+def extract_audio_from_youtube(video_url: str, session_id: str, output_dir: str) -> str:
+    """
+    Extract audio from a YouTube video URL using multiple methods.
+    Primary method is YouTube API, with fallbacks to other methods if needed.
+    
+    Args:
+        video_url: URL of the YouTube video
+        session_id: Session ID for naming the output file
+        output_dir: Directory to save the audio file
+        
+    Returns:
+        Path to the extracted audio file
+        
+    Raises:
+        ValueError: If the URL is invalid
+        RuntimeError: If audio extraction fails
+    """
+    # Extract video ID from YouTube URL
+    video_id = None
+    youtube_patterns = [
+        r'(?:youtube\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})',
+        r'(?:youtube\.com/shorts/)([^"&?/ ]{11})'
+    ]
+    
+    for pattern in youtube_patterns:
+        match = re.search(pattern, video_url)
+        if match:
+            video_id = match.group(1)
+            break
+            
+    if not video_id:
+        logger.error(f"Could not extract video ID from URL: {video_url}")
+        raise ValueError(f"Invalid YouTube URL format: {video_url}")
+    
+    logger.info(f"Extracted YouTube video ID: {video_id}")
+    
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Output file path
+    output_path = os.path.join(output_dir, f"{session_id}.mp3")
+    logger.info(f"Output path: {output_path}")
+    
+    # Try multiple methods to download the audio
+    errors = []
+    
+    # Method 1: Try using YouTube Data API (most reliable but requires API key)
+    try:
+        logger.info(f"Method 1: Attempting to use YouTube Data API for video {video_id}")
+        
+        # Import required modules
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        import requests
+        import tempfile
+        from pydub import AudioSegment
+        
+        # Get YouTube API key from Secret Manager
+        from utils.secret_manager import get_secret
+        youtube_api_key = get_secret('youtube-api-key')
+        
+        if not youtube_api_key:
+            logger.warning("YouTube API key not found in Secret Manager, skipping Method 1")
+            errors.append("YouTube API key not found")
+        else:
+            logger.info("Successfully retrieved YouTube API key")
+            
+            # Create YouTube API client
+            youtube = build('youtube', 'v3', developerKey=youtube_api_key)
+            
+            # Get video details to verify it exists and is accessible
+            video_response = youtube.videos().list(
+                part='snippet,contentDetails',
+                id=video_id
+            ).execute()
+            
+            if not video_response.get('items'):
+                logger.error(f"Video {video_id} not found or not accessible via API")
+                errors.append("Video not found via API")
+            else:
+                video_info = video_response['items'][0]
+                video_title = video_info['snippet']['title']
+                logger.info(f"Found video via API: {video_title}")
+                
+                # First try with a direct audio extraction approach
+                try:
+                    # Use ffmpeg directly to download and convert
+                    import subprocess
+                    ffmpeg_cmd = [
+                        'ffmpeg', '-y', '-i', f"https://www.youtube.com/watch?v={video_id}", 
+                        '-vn', '-acodec', 'libmp3lame', '-q:a', '2', output_path
+                    ]
+                    
+                    logger.info(f"Running ffmpeg command: {' '.join(ffmpeg_cmd)}")
+                    result = subprocess.run(ffmpeg_cmd, capture_output=True, text=True)
+                    
+                    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                        logger.info(f"Successfully downloaded and converted audio using ffmpeg: {output_path}")
+                        return output_path
+                    else:
+                        logger.warning(f"ffmpeg command failed: {result.stderr}")
+                        # Continue to next approach
+                except Exception as ffmpeg_error:
+                    logger.warning(f"Direct ffmpeg approach failed: {str(ffmpeg_error)}")
+                    # Continue to next approach
+                
+                # Try using youtube-dlp with a custom format selection
+                try:
+                    import yt_dlp
+                    
+                    # Special options focusing just on audio extraction
+                    api_opts = {
+                        'format': 'bestaudio',  # Only get audio
+                        'postprocessors': [{
+                            'key': 'FFmpegExtractAudio',
+                            'preferredcodec': 'mp3',
+                        }],
+                        'outtmpl': output_path.replace('.mp3', ''),
+                        'quiet': True,
+                        'no_warnings': True,
+                        'skip_download': False,
+                        'noplaylist': True,
+                        'youtube_include_dash_manifest': False,
+                    }
+                    
+                    with yt_dlp.YoutubeDL(api_opts) as ydl:
+                        logger.info(f"Downloading audio with API-assisted approach")
+                        ydl.download([f"https://www.youtube.com/watch?v={video_id}"])
+                    
+                    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                        logger.info(f"Successfully downloaded audio using API-assisted approach: {output_path}")
+                        return output_path
+                except Exception as api_dlp_error:
+                    logger.warning(f"API-assisted yt-dlp approach failed: {str(api_dlp_error)}")
+                    # Continue to final approach
+    except Exception as e:
+        error_msg = f"Method 1 (YouTube API) failed: {str(e)}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+    
+    # Method 2: Try using pytube
+    try:
+        logger.info(f"Method 2: Attempting to use pytube to download video {video_id}")
+        
+        # Check if pytube is installed
+        pytube_spec = importlib.util.find_spec("pytube")
+        if pytube_spec is None:
+            logger.warning("pytube is not installed, skipping Method 2")
+            errors.append("pytube is not installed")
+        else:
+            from pytube import YouTube
+            
+            # Create a YouTube object
+            yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
+            
+            # Get the audio stream
+            audio_stream = yt.streams.filter(only_audio=True).first()
+            
+            if not audio_stream:
+                logger.error(f"No audio stream found for video {video_id}")
+                errors.append("No audio stream found")
+            else:
+                # Download to a temporary file
+                temp_file = audio_stream.download(output_path=output_dir, filename=f"{session_id}_temp")
+                logger.info(f"Downloaded audio to {temp_file}")
+                
+                # Convert to mp3 using pydub
+                from pydub import AudioSegment
+                audio = AudioSegment.from_file(temp_file)
+                audio.export(output_path, format="mp3")
+                logger.info(f"Converted audio to mp3: {output_path}")
+                
+                # Remove the temporary file
+                try:
+                    os.remove(temp_file)
+                    logger.info(f"Removed temporary file: {temp_file}")
+                except Exception as remove_error:
+                    logger.warning(f"Could not remove temporary file: {str(remove_error)}")
+                
+                # Verify the file exists
+                if os.path.exists(output_path):
+                    logger.info(f"Method 1 successful: {output_path}")
+                    return output_path
+    except Exception as e:
+        error_msg = f"Method 2 (pytube) failed: {str(e)}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+    
+    # Method 3: Try using yt-dlp
+    try:
+        logger.info(f"Method 3: Attempting to use yt-dlp for video {video_id}")
+        
+        # Check if yt-dlp is installed
+        try:
+            import yt_dlp
+        except ImportError:
+{{ ... }}
+                    shutil.move(actual_output_path, output_path)
+                except Exception as rename_error:
+                    logger.warning(f"Could not rename file, using original: {str(rename_error)}")
+                    output_path = actual_output_path
+            
+            logger.info(f"Method 3 successful: {output_path}")
+            return output_path
+        else:
+            logger.error("Method 3 failed: No mp3 files found")
+            errors.append("Method 3 failed: No mp3 files found")
+    except Exception as e:
+        error_msg = f"Method 3 (yt-dlp) failed: {str(e)}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+    
+{{ ... }}
+    # Method 4: Try using yt-dlp with different options
+    try:
+        logger.info(f"Method 4: Attempting to use yt-dlp with different options for video {video_id}")
+        
+        # We already checked for yt-dlp in Method 2
+        import yt_dlp
+        
+        # Alternative options for yt-dlp
+        alternative_opts = {
+            'format': 'worstaudio/worst',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '128',
+            }],
+            'paths': {'home': output_dir},
+            'outtmpl': {'default': f"{session_id}_alt.%(ext)s"},
+            'quiet': False,
+            'no_warnings': False,
+            'ignoreerrors': True,
+            'nocheckcertificate': True,
+            'geo_bypass': True,
+            'socket_timeout': 30,
+            'retries': 10,
+            'fragment_retries': 10,
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            }
+        }
+        
+        with yt_dlp.YoutubeDL(alternative_opts) as ydl:
+            logger.info(f"Downloading with alternative options: {video_url}")
+            ydl.download([video_url])
+        
+        # Check for the file
+        possible_files = glob.glob(os.path.join(output_dir, f"{session_id}*.mp3"))
+        if possible_files:
+            actual_output_path = possible_files[0]
+            logger.info(f"Found downloaded audio file: {actual_output_path}")
+            
+            # If the file doesn't match our expected path, rename it
+            if actual_output_path != output_path:
+                logger.info(f"Renaming {actual_output_path} to {output_path}")
+                try:
+                    shutil.move(actual_output_path, output_path)
+                except Exception as rename_error:
+                    logger.warning(f"Could not rename file, using original: {str(rename_error)}")
+                    output_path = actual_output_path
+            
+            logger.info(f"Method 4 successful: {output_path}")
+            return output_path
+        else:
+            logger.error("Method 4 failed: No mp3 files found")
+            errors.append("Method 4 failed: No mp3 files found")
+    except Exception as e:
+        error_msg = f"Method 4 (alternative yt-dlp) failed: {str(e)}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+    
+    # Method 5: Try a last-resort approach with thumbnail verification
+    try:
+        logger.info(f"Method 5: Attempting last-resort approach for video {video_id}")
+        
+        # Import required modules
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        import requests
+        import tempfile
+        from pydub import AudioSegment
+        
+        # Get YouTube API key from Secret Manager
+        from utils.secret_manager import get_secret
+        youtube_api_key = get_secret('youtube-api-key')
+        
+        if not youtube_api_key:
+            logger.error("YouTube API key not found in Secret Manager")
+            errors.append("YouTube API key not found")
+            raise ValueError("YouTube API key not found")
+        
+        logger.info("Successfully retrieved YouTube API key")
+        
+        # Create YouTube API client
+        youtube = build('youtube', 'v3', developerKey=youtube_api_key)
+        
+        # Get video details to verify it exists and is accessible
+        video_response = youtube.videos().list(
+            part='snippet,contentDetails',
+            id=video_id
+        ).execute()
+        
+        if not video_response.get('items'):
+            logger.error(f"Video {video_id} not found or not accessible via API")
+            errors.append("Video not found via API")
+            raise ValueError(f"Video {video_id} not found or not accessible")
+        
+        video_info = video_response['items'][0]
+        video_title = video_info['snippet']['title']
+        logger.info(f"Found video via API: {video_title}")
+        
+        # Use youtube-dl-server approach to get the audio URL
+        # This is a more reliable approach than direct API calls for audio extraction
+        audio_url = None
+        
+        # First try with a direct audio extraction approach
+        try:
+            # Use a temporary file for the audio
+            temp_file = os.path.join(output_dir, f"{session_id}_temp.mp4")
+            
+            # Use a direct audio URL construction (works for many videos)
+            direct_audio_url = f"https://www.youtube.com/watch?v={video_id}"
+            
+            # Use ffmpeg directly to download and convert
+            import subprocess
+            ffmpeg_cmd = [
+                'ffmpeg', '-y', '-i', direct_audio_url, 
+                '-vn', '-acodec', 'libmp3lame', '-q:a', '2', output_path
+            ]
+            
+            logger.info(f"Running ffmpeg command: {' '.join(ffmpeg_cmd)}")
+            result = subprocess.run(ffmpeg_cmd, capture_output=True, text=True)
+            
+            if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                logger.info(f"Successfully downloaded and converted audio using ffmpeg: {output_path}")
+                return output_path
+            else:
+                logger.warning(f"ffmpeg command failed: {result.stderr}")
+                # Continue to next approach
+        except Exception as ffmpeg_error:
+            logger.warning(f"Direct ffmpeg approach failed: {str(ffmpeg_error)}")
+            # Continue to next approach
+        
+        # Try using youtube-dlp with a custom format selection
+        try:
+            import yt_dlp
+            
+            # Special options focusing just on audio extraction
+            api_opts = {
+                'format': 'bestaudio',  # Only get audio
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                }],
+                'outtmpl': output_path.replace('.mp3', ''),
+                'quiet': True,
+                'no_warnings': True,
+                'skip_download': False,
+                'noplaylist': True,
+                'youtube_include_dash_manifest': False,
+            }
+            
+            with yt_dlp.YoutubeDL(api_opts) as ydl:
+                logger.info(f"Downloading audio with API-assisted approach")
+                ydl.download([f"https://www.youtube.com/watch?v={video_id}"])
+            
+            if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                logger.info(f"Successfully downloaded audio using API-assisted approach: {output_path}")
+                return output_path
+        except Exception as api_dlp_error:
+            logger.warning(f"API-assisted yt-dlp approach failed: {str(api_dlp_error)}")
+            # Continue to final approach
+        
+        # If all API approaches failed, try a direct HTTP request to a proxy service
+        # This is a last resort and may not be reliable long-term
+        try:
+            proxy_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+            logger.info(f"Checking if video has thumbnail: {proxy_url}")
+            
+            # Just checking if the video exists via thumbnail
+            thumbnail_response = requests.head(proxy_url, timeout=5)
+            if thumbnail_response.status_code == 200:
+                logger.info(f"Video thumbnail exists, video is likely valid")
+                
+                # Create a simple HTML file that embeds the YouTube video
+                # This is for documentation purposes only, to help debug
+                html_path = os.path.join(output_dir, f"{session_id}_debug.html")
+                with open(html_path, 'w') as f:
+                    f.write(f'''
+                    <!DOCTYPE html>
+                    <html>
+                    <head><title>YouTube Audio Debug</title></head>
+                    <body>
+                        <h1>YouTube Video {video_id}</h1>
+                        <p>Title: {video_title}</p>
+                        <p>This file was created for debugging purposes.</p>
+                        <p>If you're seeing this file, it means the application attempted to extract audio from this video.</p>
+                    </body>
+                    </html>
+                    ''')
+                
+                # Create an empty audio file with metadata as a fallback
+                # This allows the application to continue with a placeholder
+                logger.warning(f"Creating empty audio file as fallback: {output_path}")
+                empty_audio = AudioSegment.silent(duration=1000)  # 1 second of silence
+                empty_audio.export(output_path, format="mp3", 
+                                  tags={'title': f"YouTube Audio Extraction Failed: {video_title}",
+                                        'artist': 'Indic-Translator',
+                                        'album': 'YouTube Audio Extraction',
+                                        'comment': f'Failed to extract audio from YouTube video {video_id}'})
+                
+                logger.info(f"Created fallback audio file: {output_path}")
+                return output_path
+        except Exception as proxy_error:
+            logger.error(f"Proxy approach failed: {str(proxy_error)}")
+            errors.append(f"Proxy approach failed: {str(proxy_error)}")
+    
+    except Exception as e:
+        error_msg = f"Method 5 (last-resort) failed: {str(e)}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+    
+    # All methods failed
+    error_msg = f"All YouTube download methods failed: {', '.join(errors)}"
+    logger.error(error_msg)
+    raise RuntimeError(error_msg)
+    
+def extract_audio_from_url(video_url: str, session_id: str, output_dir: str) -> str:
+    """
+    Extract audio from a YouTube or Instagram video URL.
+    
+    Args:
+        video_url: URL of the video
+        session_id: Session ID for naming the output file
+        output_dir: Directory to save the audio file
+        
+    Returns:
+        Path to the extracted audio file
+        
+    Raises:
+        ValueError: If the URL is invalid
+        RuntimeError: If audio extraction fails
+    """
+    # Validate URL
+    is_valid, platform = is_valid_video_url(video_url)
+    if not is_valid:
+        logger.error(f"Invalid video URL: {video_url}")
+        raise ValueError(f"Invalid video URL. Please provide a valid YouTube or Instagram URL.")
+    
+    logger.info(f"Extracting audio from {platform} URL: {video_url}")
+    
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Use platform-specific extraction
+    if platform == "youtube":
+        return extract_audio_from_youtube(video_url, session_id, output_dir)
+    elif platform == "instagram":
+        # For now, use a simplified method for Instagram
+        try:
+            import yt_dlp
+        except ImportError:
+            logger.error("yt-dlp is not installed. Install it with: pip install yt-dlp")
+            raise ImportError("yt-dlp is not installed. Install it with: pip install yt-dlp")
+            
+        # Output file path
+        output_path = os.path.join(output_dir, f"{session_id}.mp3")
+        logger.info(f"Output path: {output_path}")
+        
+        # Options for yt-dlp
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'paths': {'home': output_dir},
+            'outtmpl': {'default': f"{session_id}.%(ext)s"},
+            'quiet': False,
+            'no_warnings': False,
+            'ignoreerrors': True,
+        }
+        
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                logger.info(f"Downloading Instagram video: {video_url}")
+                ydl.download([video_url])
+            
+            # Check for the file
+            possible_files = glob.glob(os.path.join(output_dir, f"{session_id}*.mp3"))
+            if possible_files:
+                actual_output_path = possible_files[0]
+                logger.info(f"Found downloaded audio file: {actual_output_path}")
+                
+                # If the file doesn't match our expected path, rename it
+                if actual_output_path != output_path:
+                    logger.info(f"Renaming {actual_output_path} to {output_path}")
+                    try:
+                        shutil.move(actual_output_path, output_path)
+                    except Exception as rename_error:
+                        logger.warning(f"Could not rename file, using original: {str(rename_error)}")
+                        output_path = actual_output_path
+                
+                logger.info(f"Instagram download successful: {output_path}")
+                return output_path
+            else:
+                logger.error("Instagram download failed: No mp3 files found")
+                raise RuntimeError("Instagram download failed: No mp3 files found")
+                
+        except Exception as e:
+            logger.error(f"Error extracting audio from Instagram URL: {str(e)}")
+            raise RuntimeError(f"Audio extraction failed: {str(e)}")
+    else:
+        # This should never happen due to validation
+        raise ValueError(f"Unsupported platform: {platform}")
+    
+

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diarization Editor Test</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/test-diarization-editor.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .test-controls {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .debug-panel {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #debug-output {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>Diarization Editor Test</h1>
+            <p>This page tests the diarization editor component with sample data.</p>
+        </div>
+        
+        <!-- Original transcription -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Original Transcription</h5>
+            </div>
+            <div class="card-body">
+                <textarea id="transcription-text" class="form-control" rows="5" readonly></textarea>
+            </div>
+        </div>
+        
+        <!-- Diarization Editor -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Diarization Editor</h5>
+            </div>
+            <div id="diarization-editor">
+                <div class="card-body">
+                    <!-- Diarization editor will be rendered here by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-controls">
+            <button id="test-save-btn" class="btn btn-primary">Test Save</button>
+            <button id="test-reset-btn" class="btn btn-secondary">Reset</button>
+        </div>
+        
+        <div class="debug-panel">
+            <h5>Debug Output</h5>
+            <div id="debug-output"></div>
+        </div>
+    </div>
+    
+    <!-- Sample data for testing -->
+    <script id="sample-diarization-data" type="application/json">
+        {{ sample_data|safe }}
+    </script>
+    
+    <!-- Include test JavaScript file for diarization editor functionality -->
+    <script src="/static/js/test-diarization-editor.js"></script>
+    
+    <!-- Test-specific JavaScript -->
+    <script>
+        // Debug logging function
+        function debugLog(message, data) {
+            const output = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            let logMessage = `[${timestamp}] ${message}`;
+            
+            if (data) {
+                if (typeof data === 'object') {
+                    logMessage += '\n' + JSON.stringify(data, null, 2);
+                } else {
+                    logMessage += '\n' + data;
+                }
+            }
+            
+            output.textContent = logMessage + '\n\n' + output.textContent;
+        }
+        
+        // Initialize test
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Test page loaded');
+            
+            // Load sample data
+            try {
+                const sampleDataElement = document.getElementById('sample-diarization-data');
+                if (sampleDataElement) {
+                    const sampleData = JSON.parse(sampleDataElement.textContent);
+                    debugLog('Sample data loaded', sampleData);
+                    
+                    // Set transcription text
+                    document.getElementById('transcription-text').value = sampleData.transcript;
+                    
+                    // Render diarization editor
+                    renderDiarizationEditor(sampleData);
+                    debugLog('Diarization editor rendered');
+                }
+            } catch (e) {
+                debugLog('Error loading sample data', e.toString());
+            }
+            
+            // Test save button
+            document.getElementById('test-save-btn').addEventListener('click', function() {
+                debugLog('Testing save functionality');
+                
+                // Collect edits
+                const updates = {};
+                document.querySelectorAll('.segment-row').forEach(row => {
+                    const segId = row.dataset.segmentId;
+                    updates[segId] = {
+                        speaker: row.querySelector('.speaker-select').value,
+                        text: row.querySelector('.segment-text').value
+                    };
+                });
+                
+                debugLog('Collected updates', updates);
+            });
+            
+            // Reset button
+            document.getElementById('test-reset-btn').addEventListener('click', function() {
+                location.reload();
+            });
+        });
+    </script>
+</body>
+</html>

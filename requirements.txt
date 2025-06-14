@@ -1,0 +1,47 @@
+# Core dependencies
+flask>=2.0.0
+Werkzeug>=2.0.0
+python-dotenv>=0.19.0
+requests>=2.25.0
+numpy>=1.20.0
+pandas>=1.3.0
+tqdm>=4.62.0
+
+# Audio processing
+librosa>=0.8.0
+soundfile>=0.10.0
+pydub>=0.25.0
+sounddevice>=0.4.5
+
+# Machine learning
+huggingface_hub>=0.10.0
+torch>=2.0.0
+transformers>=4.30.0
+
+# For TTS
+gtts>=2.3.0
+
+# For validation
+scikit-learn>=1.0.0
+scipy>=1.7.0
+matplotlib>=3.4.0
+
+# For Sarvam and Cartesia integration
+aiofiles>=24.1.0
+asyncio>=3.4.3
+aiohttp>=3.8.5
+base64io>=1.0.3
+
+# For Azure Storage (needed by Sarvam Batch API)
+azure-storage-file-datalake>=12.18.0
+azure-identity>=1.12.0
+
+# For Google Generative AI integration
+google-generativeai>=0.3.0
+
+# For YouTube/Instagram video processing
+yt-dlp>=2023.3.4
+
+# For deployment
+gunicorn>=20.1.0
+flask-cors>=3.0.10

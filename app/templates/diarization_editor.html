@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diarization Editor</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Workflow Navigation -->
+        <div class="workflow-steps">
+            <a href="/upload" class="step">Upload</a>
+            <a href="/transcription/{{ session_id }}" class="step">Transcription</a>
+            <span class="step active">Diarization Edit</span>
+            <span class="step">Translation</span>
+            <span class="step">Synthesis</span>
+        </div>
+        
+        <h1>Edit Transcription</h1>
+        
+        <!-- Audio Visualization -->
+        <div id="audio-waveform"></div>
+        <div class="audio-controls">
+            <button id="play-btn">Play</button>
+            <span id="time-display">00:00</span>
+        </div>
+        
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <div id="segments-container">
+                <!-- Segments will be dynamically inserted here -->
+                <!-- Example structure for each segment:
+                <div class="segment" data-segment-id="1">
+                    <div class="segment-header">
+                        <span class="segment-meta">#1 | 0:00-0:03</span>
+                        <select class="speaker-select">
+                            <option>SPEAKER_00</option>
+                            <option>SPEAKER_01</option>
+                        </select>
+                    </div>
+                    <textarea class="segment-text">Original transcript text</textarea>
+                </div>
+                -->
+            </div>
+            
+            <div class="editor-actions">
+                <button id="save-diarization-btn" class="btn-primary">Save All Changes</button>
+                <button id="discard-btn" class="btn-secondary">Discard</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/wavesurfer.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

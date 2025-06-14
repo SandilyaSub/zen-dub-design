@@ -1,0 +1,32 @@
+[
+  {
+    "voice": "Madhu",
+    "openAI_voice": "alloy",
+    "instructions": "Voice Affect: Conversational and natural with subtle variations in pitch to convey different emotions ranging from excitement to frustration. Tone: Friendly and approachable, with underlying hints of middle-class aspirations and occasional exasperation. Should sound like a relatable young man in his twenties. Pacing: Moderate to slightly fast during excited moments, slower during contemplative or serious discussions. Natural speech rhythm that mirrors everyday conversation. Emotion: Optimistic yet realistic, conveying the struggles and hopes of middle-class life. Ability to shift between comedy, sincerity, and mild frustration. Personality: Genuine, slightly naive, ambitious but grounded. Voice should reflect someone who is trying to navigate life's challenges with humor and determination. Pauses: Natural conversational pauses, slightly longer when processing information or making important decisions."
+  },
+  {
+    "voice": "Mahesh",
+    "openAI_voice": "echo",
+    "instructions": "Voice Affect: Animated and expressive with frequent pitch variations to emphasize comedic moments and reactions. Tone: Playful and energetic, conveying loyalty and mischief in equal measure. Should sound like an enthusiastic friend who's always ready for adventure. Pacing: Generally faster than MCM, with rapid delivery during excited explanations or when sharing gossip. Quick-witted responses with minimal hesitation. Emotion: Consistently upbeat and supportive, with moments of dramatic flair for comedic effect. Able to convey concern for friends while maintaining optimistic outlook. Personality: Loyal, slightly dramatic, quick-thinking, and always ready with advice (whether good or bad). Voice should reflect someone who speaks before thinking but always means well. Pauses: Brief pauses for dramatic effect, especially before delivering punchlines or revealing important information."
+  },
+  {
+    "voice": "Mother",
+    "openAI_voice": "nova",
+    "instructions": "Voice Affect: Warm and authoritative with traditional Indian mother characteristics. Capable of shifting from stern to loving within the same sentence. Tone: Nurturing yet firm, with the ability to convey both disapproval and unconditional love. Should embody the voice of experience and wisdom. Pacing: Measured and deliberate, with emphasis on important life lessons. Faster when scolding, slower when offering comfort or advice. Emotion: Complex emotional range from loving concern to exasperated authority. Should convey the depth of maternal care while maintaining comedic timing. Personality: Traditional, wise, slightly dramatic when necessary, protective of family. Voice should reflect someone who has seen it all and offers guidance with love and humor. Pauses: Purposeful pauses before delivering wisdom or when waiting for acknowledgment of authority."
+  },
+  {
+    "voice": "Bobby",
+    "openAI_voice": "onyx",
+    "instructions": "Voice Affect: Confident and slightly competitive with clear articulation and moderate authority. Tone: Self-assured with hints of stubbornness, capable of both argument and reconciliation. Pacing: Steady and measured, with emphasis on key points during debates or discussions. Emotion: Pride, determination, occasional vulnerability during resolution moments. Personality: Strong-willed, principled, capable of growth and learning. Pauses: Strategic pauses during arguments for emphasis and consideration."
+  },
+  {
+    "voice": "Baby",
+    "openAI_voice": "shimmer",
+    "instructions": "Voice Affect: Softer and more emotionally expressive with frequent tonal shifts. Tone: Sensitive and reactive, with ability to convey hurt feelings and joy equally well. Pacing: Variable based on emotional state - faster when upset, slower when contemplative. Emotion: High emotional range from joy to sadness, with authentic feeling behind each state. Personality: Emotional, genuine, capable of forgiveness and deep connection. Pauses: Emotional pauses when processing feelings or preparing for vulnerable moments."
+  },
+  {
+    "voice": "Budatha",
+    "openAI_voice": "fable",
+    "instructions": "Voice Affect: Enthusiastic and business-oriented with variations between confidence and uncertainty. Tone: Optimistic about business prospects with underlying nervousness about outcomes. Pacing: Quick when excited about business opportunities, hesitant when facing challenges. Emotion: Ambitious excitement mixed with realistic worry about success and failure. Personality: Entrepreneurial spirit, slightly naive about business complexities, determined despite setbacks. Pauses: Brief hesitations when calculating or considering business decisions."
+  }
+]

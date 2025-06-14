@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Logs
+logs/
+*.log
+nohup.out
+
+# Temporary files and outputs
+temp/
+uploads/
+outputs/
+test_outputs/
+demo_outputs/
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Deployment specific
+.netlify/
+netlify.toml
+Procfile
+runtime.txt
+windsurf_deployment.yaml
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

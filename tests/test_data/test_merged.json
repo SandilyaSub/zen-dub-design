@@ -1,0 +1,50 @@
+{
+  "merged_segments": [
+    {
+      "segment_id": "segment_1",
+      "speaker": "SPEAKER_00",
+      "start_time": 0.0,
+      "end_time": 3.0,
+      "duration": 3.0,
+      "text": "Hello, my name is Madhu.",
+      "translated_text": "Hello, my name is Madhu.",
+      "language": "english"
+    },
+    {
+      "segment_id": "segment_2",
+      "speaker": "SPEAKER_01",
+      "start_time": 3.5,
+      "end_time": 7.0,
+      "duration": 3.5,
+      "text": "Hi Madhu, I'm Mahesh. How are you doing today?",
+      "translated_text": "Hi Madhu, I'm Mahesh. How are you doing today?",
+      "language": "english"
+    },
+    {
+      "segment_id": "segment_3",
+      "speaker": "SPEAKER_00",
+      "start_time": 7.5,
+      "end_time": 12.0,
+      "duration": 4.5,
+      "text": "I'm doing well, thank you. I'm excited to test the OpenAI text-to-speech integration.",
+      "translated_text": "I'm doing well, thank you. I'm excited to test the OpenAI text-to-speech integration.",
+      "language": "english"
+    },
+    {
+      "segment_id": "segment_4",
+      "speaker": "SPEAKER_01",
+      "start_time": 12.5,
+      "end_time": 18.0,
+      "duration": 5.5,
+      "text": "That sounds great! Let's make sure the voice mapping is working correctly with the OpenAI voices.",
+      "translated_text": "That sounds great! Let's make sure the voice mapping is working correctly with the OpenAI voices.",
+      "language": "english"
+    }
+  ],
+  "metadata": {
+    "source_language": "english",
+    "target_language": "english",
+    "timestamp": "2023-07-20T12:00:00",
+    "created_by": "test_script"
+  }
+}

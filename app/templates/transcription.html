@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transcription</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Workflow Navigation -->
+        <div class="workflow-steps">
+            <a href="/upload" class="step">Upload</a>
+            <span class="step active">Transcription</span>
+            <a href="/editor/{{ session_id }}" class="step">Diarization Edit</span>
+            <span class="step">Translation</span>
+            <span class="step">Synthesis</span>
+        </div>
+        
+        <h1>Transcription Results</h1>
+        
+        <!-- Transcription Content -->
+        <div id="transcription-results">
+            <!-- Transcription will be rendered here -->
+        </div>
+        
+        <div class="workflow-actions">
+            <a href="/upload" class="btn btn-secondary">← Back</a>
+            <a href="/editor/{{ session_id }}" class="btn btn-primary">Next → Edit Diarization</a>
+        </div>
+    </div>
+</body>
+</html>
