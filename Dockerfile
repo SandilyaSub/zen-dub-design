@@ -82,7 +82,7 @@ ENV SARVAM_API_KEY="placeholder"
 ENV GEMINI_API_KEY=""
 ENV CARTESIA_API_KEY="placeholder"
 ENV CARTESIA_API_VERSION="placeholder"
-ENV YOUTUBE_API_KEY="AIzaSyDK9F5lcESqjZAeI9Gug7R3SruvbAlp4IA"
+ENV YOUTUBE_API_KEY="placeholder"
 ENV SECRET_KEY="placeholder"
 
 # Expose port
