@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Box, Grid } from '@mui/material';
+import { CssBaseline, Container, Box } from '@mui/material';
 import Header from './components/Header';
 import AudioUploadCard from './components/AudioUploadCard';
 import TranslationCard from './components/TranslationCard';
@@ -91,34 +91,33 @@ function App() {
         <Header />
         
         <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <AudioUploadCard 
-                onUpload={handleAudioUpload}
-                isActive={currentStep === 'upload'}
-                isCompleted={audioFile !== null}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TranslationCard 
-                onTranslate={handleTranslationStart}
-                onLanguageChange={handleLanguageChange}
-                isActive={currentStep === 'translate'}
-                isDisabled={!audioFile}
-                sourceLanguage={sourceLanguage}
-                targetLanguage={targetLanguage}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ResultsCard 
-                isActive={currentStep === 'results'}
-                sourceLanguage={sourceLanguage}
-                targetLanguage={targetLanguage}
-                isVisible={translationComplete}
-                onStartOver={handleStartOver}
-              />
-            </Grid>
-          </Grid>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            gap: 3,
+            mb: 3
+          }}>
+            <AudioUploadCard 
+              onUpload={handleAudioUpload}
+              isActive={currentStep === 'upload'}
+              isCompleted={audioFile !== null}
+            />
+            <TranslationCard 
+              onTranslate={handleTranslationStart}
+              onLanguageChange={handleLanguageChange}
+              isActive={currentStep === 'translate'}
+              isDisabled={!audioFile}
+              sourceLanguage={sourceLanguage}
+              targetLanguage={targetLanguage}
+            />
+          </Box>
+          <ResultsCard 
+            isActive={currentStep === 'results'}
+            sourceLanguage={sourceLanguage}
+            targetLanguage={targetLanguage}
+            isVisible={translationComplete}
+            onStartOver={handleStartOver}
+          />
         </Container>
       </Box>
     </ThemeProvider>
