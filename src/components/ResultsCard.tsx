@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardContent,
@@ -44,7 +43,6 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   const translatedText = sampleTranslations[targetLanguage as keyof typeof sampleTranslations] || sampleTranslations.hindi;
 
   const stepNumber = 3;
-  const isStepCompleted = isVisible;
 
   if (!isVisible) {
     return (

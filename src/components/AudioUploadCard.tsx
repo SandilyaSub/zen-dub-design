@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -7,8 +6,7 @@ import {
   Box, 
   Button,
   LinearProgress,
-  Chip,
-  Divider
+  Chip
 } from '@mui/material';
 import { 
   CloudUpload, 
