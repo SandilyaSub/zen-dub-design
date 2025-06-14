@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -19,8 +18,7 @@ import {
 } from '@mui/material';
 import { 
   Translate,
-  CompareArrows,
-  Star
+  CompareArrows
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
@@ -104,7 +102,7 @@ const TranslationPage = () => {
       </Box>
 
       <Grid container spacing={4}>
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
@@ -182,7 +180,7 @@ const TranslationPage = () => {
           </Card>
         </Grid>
 
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>

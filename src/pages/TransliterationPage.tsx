@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -6,7 +7,7 @@ import {
   CardContent, 
   Typography, 
   Button,
-  Grid2 as Grid,
+  Grid,
   TextField,
   FormControl,
   InputLabel,
@@ -91,7 +92,7 @@ const TransliterationPage = () => {
       </Box>
 
       <Grid container spacing={4}>
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
@@ -171,7 +172,7 @@ const TransliterationPage = () => {
           )}
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>

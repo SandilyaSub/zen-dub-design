@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -20,10 +19,8 @@ import {
 import { 
   VolumeUp,
   PlayArrow,
-  Download,
-  Tune
+  Download
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
 
 const TTS_PROVIDERS = [
@@ -45,7 +42,6 @@ const VOICE_OPTIONS = {
 };
 
 const SynthesisPage = () => {
-  const navigate = useNavigate();
   const { translationData, setSynthesisData } = useSession();
   const [selectedProvider, setSelectedProvider] = useState<'sarvam' | 'openvoice'>('sarvam');
   const [selectedVoice, setSelectedVoice] = useState('meera');
@@ -94,7 +90,7 @@ const SynthesisPage = () => {
       </Box>
 
       <Grid container spacing={4}>
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
@@ -219,7 +215,7 @@ const SynthesisPage = () => {
           )}
         </Grid>
 
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>

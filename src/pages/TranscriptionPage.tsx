@@ -6,7 +6,7 @@ import {
   CardContent, 
   Typography, 
   Button,
-  Grid2 as Grid,
+  Grid,
   LinearProgress,
   Chip,
   TextField,
@@ -135,7 +135,7 @@ const TranscriptionPage = () => {
       </Box>
 
       <Grid container spacing={4}>
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -212,7 +212,7 @@ const TranscriptionPage = () => {
           </Card>
         </Grid>
 
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
