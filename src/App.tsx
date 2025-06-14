@@ -61,22 +61,28 @@ function App() {
   const [targetLanguage, setTargetLanguage] = useState('hindi');
   const [translationComplete, setTranslationComplete] = useState(false);
 
+  console.log('App rendering with currentStep:', currentStep);
+
   const handleAudioUpload = (fileName: string) => {
+    console.log('Audio uploaded:', fileName);
     setAudioFile(fileName);
     setCurrentStep('translate');
   };
 
   const handleTranslationStart = () => {
+    console.log('Translation started');
     setCurrentStep('results');
     setTranslationComplete(true);
   };
 
   const handleLanguageChange = (source: string, target: string) => {
+    console.log('Language changed:', source, 'to', target);
     setSourceLanguage(source);
     setTargetLanguage(target);
   };
 
   const handleStartOver = () => {
+    console.log('Starting over');
     setCurrentStep('upload');
     setAudioFile(null);
     setTranslationComplete(false);
