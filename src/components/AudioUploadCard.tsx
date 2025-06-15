@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useRef } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -12,47 +13,164 @@ import {
   CloudUpload, 
   AudioFile,
   CheckCircle,
-  Link as LinkIcon
+  Link as LinkIcon,
+  PlayArrow,
+  Pause
 } from '@mui/icons-material';
+import { useSession } from '../context/SessionContext';
+import { apiService } from '../services/apiService';
 
 interface AudioUploadCardProps {
-  onUpload: (fileName: string) => void;
+  onUpload: (fileName: string, duration: number) => void;
   isActive: boolean;
   isCompleted: boolean;
 }
 
 const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, isCompleted }) => {
+  const { sessionId, audioData, setAudioData } = useSession();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const handleFileUpload = () => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/')) {
+      alert('Please select an audio file');
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
-    
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          onUpload('audio_sample.mp3');
-          return 100;
-        }
-        return prev + 20;
+
+    try {
+      // Create object URL for preview
+      const objectUrl = URL.createObjectURL(file);
+      
+      // Update session with file data
+      setAudioData({
+        file,
+        url: objectUrl,
+        fileName: file.name,
+        duration: null, // Will be set after upload
       });
-    }, 300);
+
+      // Simulate progress for UI feedback
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      // Upload to backend
+      const result = await apiService.uploadAudio(file, sessionId);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (result.success) {
+        setAudioData({
+          fileName: result.fileName,
+          duration: result.duration,
+        });
+        onUpload(result.fileName, result.duration);
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Upload failed. Please try again.');
+      setAudioData({
+        file: null,
+        url: null,
+        fileName: null,
+        duration: null,
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleVideoUrlUpload = async () => {
+    if (!videoUrl.trim()) {
+      alert('Please enter a valid URL');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 300);
+
+      const result = await apiService.processVideoUrl(videoUrl, sessionId);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (result.success) {
+        setAudioData({
+          fileName: result.fileName,
+          duration: result.duration,
+          url: null, // Backend will provide the processed audio URL
+        });
+        onUpload(result.fileName, result.duration);
+      } else {
+        throw new Error(result.error || 'Video processing failed');
+      }
+    } catch (error) {
+      console.error('Video processing error:', error);
+      alert('Video processing failed. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const togglePlayback = () => {
+    if (!audioRef.current || !audioData.url) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const formatDuration = (seconds: number | null) => {
+    if (!seconds) return '';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const stepNumber = 1;
-  const isStepActive = isActive;
-  const isStepCompleted = isCompleted;
 
   return (
     <Card 
       sx={{ 
-        border: isStepActive ? '2px solid #6366f1' : '1px solid #e2e8f0',
-        backgroundColor: isStepCompleted ? '#f0fdf4' : 'white',
-        opacity: !isStepActive && !isStepCompleted ? 0.6 : 1,
+        border: isActive ? '2px solid #6366f1' : '1px solid #e2e8f0',
+        backgroundColor: isCompleted ? '#f0fdf4' : 'white',
+        opacity: !isActive && !isCompleted ? 0.6 : 1,
         transition: 'all 0.3s ease'
       }}
     >
@@ -63,7 +181,7 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
               width: 32, 
               height: 32, 
               borderRadius: '50%',
-              backgroundColor: isStepCompleted ? '#10b981' : isStepActive ? '#6366f1' : '#94a3b8',
+              backgroundColor: isCompleted ? '#10b981' : isActive ? '#6366f1' : '#94a3b8',
               color: 'white',
               display: 'flex',
               alignItems: 'center',
@@ -72,7 +190,7 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
               fontWeight: 600
             }}
           >
-            {isStepCompleted ? <CheckCircle sx={{ fontSize: 18 }} /> : stepNumber}
+            {isCompleted ? <CheckCircle sx={{ fontSize: 18 }} /> : stepNumber}
           </Box>
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
             Step 1: Input
@@ -109,6 +227,7 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
                 </Typography>
                 
                 <Box 
+                  onClick={() => fileInputRef.current?.click()}
                   sx={{ 
                     border: '2px dashed #cbd5e1',
                     borderRadius: 2,
@@ -130,9 +249,17 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
                   </Typography>
                 </Box>
 
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  accept="audio/*"
+                  style={{ display: 'none' }}
+                />
+
                 <Button
                   variant="contained"
-                  onClick={handleFileUpload}
+                  onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading || !isActive}
                   fullWidth
                   sx={{ mb: 2 }}
@@ -150,6 +277,8 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
                   <input
                     type="text"
                     placeholder="Paste YouTube or Instagram URL"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -162,11 +291,12 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
 
                 <Button
                   variant="contained"
-                  disabled={!isActive}
+                  onClick={handleVideoUrlUpload}
+                  disabled={!isActive || isUploading || !videoUrl.trim()}
                   fullWidth
                   sx={{ mb: 2 }}
                 >
-                  Upload Video
+                  {isUploading ? 'Processing...' : 'Upload Video'}
                 </Button>
               </Box>
             )}
@@ -188,11 +318,31 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
               Upload Complete!
             </Typography>
             <Chip 
-              label="audio_sample.mp3" 
+              label={`${audioData.fileName} ${audioData.duration ? `(${formatDuration(audioData.duration)})` : ''}`}
               variant="outlined" 
               size="small"
-              sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981' }}
+              sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 2 }}
             />
+            
+            {audioData.url && (
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={togglePlayback}
+                  startIcon={isPlaying ? <Pause /> : <PlayArrow />}
+                >
+                  {isPlaying ? 'Pause' : 'Play'}
+                </Button>
+                <audio
+                  ref={audioRef}
+                  src={audioData.url}
+                  onEnded={() => setIsPlaying(false)}
+                  onPause={() => setIsPlaying(false)}
+                  onPlay={() => setIsPlaying(true)}
+                />
+              </Box>
+            )}
           </Box>
         )}
       </CardContent>
