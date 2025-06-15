@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -15,7 +14,8 @@ import {
   Select,
   MenuItem,
   Paper,
-  Divider
+  Divider,
+  Badge
 } from '@mui/material';
 import { 
   VolumeUp,
@@ -229,16 +229,36 @@ const TranscriptionPage = () => {
                     <Paper 
                       key={segment.id} 
                       elevation={1} 
-                      sx={{ p: 3, border: '1px solid #e5e7eb' }}
+                      sx={{ 
+                        p: 3, 
+                        border: '1px solid #e5e7eb',
+                        position: 'relative',
+                        '&:hover': {
+                          boxShadow: 2
+                        }
+                      }}
                     >
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      {/* Segment number badge - positioned at top right */}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: -8,
+                          right: 16,
+                          backgroundColor: '#1976d2',
+                          color: 'white',
+                          borderRadius: '12px',
+                          px: 2,
+                          py: 0.5,
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          boxShadow: 1
+                        }}
+                      >
+                        #{index + 1}
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Chip 
-                            label={`Segment ${index + 1}`}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                          />
                           <FormControl size="small" sx={{ minWidth: 120 }}>
                             <InputLabel>Speaker</InputLabel>
                             <Select
@@ -256,6 +276,7 @@ const TranscriptionPage = () => {
                             label={`${formatTime(segment.start)} - ${formatTime(segment.end)}`}
                             size="small"
                             variant="outlined"
+                            sx={{ backgroundColor: '#f5f5f5' }}
                           />
                         </Box>
                         <Button
