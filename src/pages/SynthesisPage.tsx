@@ -92,7 +92,7 @@ const SynthesisPage = () => {
     // Simulate synthesis process
     setTimeout(() => {
       // Create a simple mock audio URL - a short base64 encoded audio file
-      const mockAudioUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjqX4PO8bCABKEVzxu7Xmi0GM3fH8N2NQRQLV6zn67hVGAhQp+jx0GMbBDAa6e/QgC8EDXnB8NqQQAoUXrTp66hVFApGn+DyvmEcBjqX4PO8bCABKEVzxu7Xmi0GM3fH8N2NQRQLV6zn67hVGAhQp+jx0GMbBzAa6e/QgC8EDXnB8NqQQAoUXrTp66hVFApGn+DyvmEcBjqX4PO8bCABKEVzxu7Xmi0GM3fH8N2NQRQLV6zn67hVGAhQp+jx0GMbBzAa6e/QgC8EDXnB8NqQ==';
+      const mockAudioUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjqX4PO8bCABKEVzxu7Xmi0GM3fH8N2NQRQLV6zn67hVGAhQp+jx0GMbBzAa6e/QgC8EDXnB8NqQQAoUXrTp66hVFApGn+DyvmEcBjqX4PO8bCABKEVzxu7Xmi0GM3fH8N2NQRQLV6zn67hVGAhQp+jx0GMbBzAa6e/QgC8EDXnB8NqQ==';
       
       setAudioUrl(mockAudioUrl);
       setSynthesisComplete(true);
@@ -125,7 +125,7 @@ const SynthesisPage = () => {
 
   if (!translationData) {
     return (
-      <Container maxWidth="md" sx={{ py: 3 }}>
+      <Container maxWidth="md" sx={{ py: 3, minHeight: 'calc(100vh - 80px)' }}>
         <Typography variant="h6" color="text.secondary">
           No translation data available. Please complete the translation step first.
         </Typography>
@@ -134,10 +134,10 @@ const SynthesisPage = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 3 }}>
+    <Container maxWidth="md" sx={{ py: 3, minHeight: 'calc(100vh - 80px)' }}>
       <ProgressSteps />
       
-      <Box sx={{ textAlign: 'center', mb: 3 }}>
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
           Speech Synthesis
         </Typography>
