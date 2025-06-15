@@ -14,8 +14,7 @@ import {
   Select,
   MenuItem,
   Paper,
-  Divider,
-  Badge
+  Divider
 } from '@mui/material';
 import { 
   VolumeUp,
