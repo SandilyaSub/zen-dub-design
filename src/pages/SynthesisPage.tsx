@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -6,7 +7,6 @@ import {
   CardContent, 
   Typography, 
   Button,
-  Grid,
   FormControl,
   InputLabel,
   Select,
@@ -89,8 +89,8 @@ const SynthesisPage = () => {
         </Typography>
       </Box>
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
+      <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
+        <Box sx={{ flex: 1 }}>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
@@ -213,9 +213,9 @@ const SynthesisPage = () => {
               </CardContent>
             </Card>
           )}
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={8}>
+        <Box sx={{ flex: 2 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
@@ -264,10 +264,11 @@ const SynthesisPage = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };
 
 export default SynthesisPage;
+

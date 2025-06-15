@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -7,7 +8,6 @@ import {
   CardContent, 
   Typography, 
   Button,
-  Grid,
   TextField,
   FormControl,
   InputLabel,
@@ -91,8 +91,8 @@ const TransliterationPage = () => {
         </Typography>
       </Box>
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
+      <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
+        <Box sx={{ flex: 2 }}>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
@@ -170,9 +170,9 @@ const TransliterationPage = () => {
               </CardContent>
             </Card>
           )}
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={4}>
+        <Box sx={{ flex: 1 }}>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -238,10 +238,11 @@ const TransliterationPage = () => {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };
 
 export default TransliterationPage;
+
