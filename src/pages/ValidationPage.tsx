@@ -21,7 +21,6 @@ import {
 } from '@mui/material';
 import { 
   CheckCircle, 
-  VolumeUp,
   Download,
   Refresh,
   Star
@@ -65,8 +64,8 @@ const ValidationPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}> {/* Account for fixed header height */}
-      <Container maxWidth="lg" sx={{ py: 0 }}> {/* Remove top padding since ProgressSteps has its own */}
+    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}>
+      <Container maxWidth="lg" sx={{ py: 0 }}>
         <ProgressSteps />
         
         <Box sx={{ textAlign: 'center', mb: 4, px: 2 }}>
@@ -209,7 +208,9 @@ const ValidationPage = () => {
 
                 <Box sx={{ mb: 3 }}>
                   <audio controls style={{ width: '100%' }}>
-                    <source src={synthesisData.audioUrl} type="audio/wav" />
+                    {synthesisData.audioUrl && (
+                      <source src={synthesisData.audioUrl} type="audio/wav" />
+                    )}
                     Your browser does not support the audio element.
                   </audio>
                 </Box>
@@ -251,7 +252,7 @@ const ValidationPage = () => {
                     <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {item.status === 'Completed' ? (
-                          <CheckCircle sx={{ color: '#10b981', fontSize: 20 }} />
+                          <CheckCircle sx={{ color: '#10b981', fontSize: 20 }}/>
                         ) : (
                           <Box sx={{ width: 20, height: 20 }}>
                             <LinearProgress 

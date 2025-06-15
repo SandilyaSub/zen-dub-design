@@ -13,8 +13,6 @@ import {
   InputLabel
 } from '@mui/material';
 import { 
-  CloudUpload, 
-  Link as LinkIcon, 
   ArrowForward 
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -44,8 +42,8 @@ const HomePage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}> {/* Account for fixed header height */}
-      <Container maxWidth="lg" sx={{ py: 0 }}> {/* Remove top padding since ProgressSteps has its own */}
+    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}>
+      <Container maxWidth="lg" sx={{ py: 0 }}>
         <ProgressSteps />
         
         <Box sx={{ textAlign: 'center', mb: 4, px: 2 }}>
@@ -60,12 +58,7 @@ const HomePage = () => {
         <Box sx={{ display: 'flex', gap: 4, mb: 4 }}>
           {/* Audio Upload Section */}
           <Box sx={{ flex: 2 }}>
-            <AudioUploadCard 
-              onFileSelect={setAudioFile}
-              onUrlChange={setVideoUrl}
-              selectedFile={audioFile}
-              videoUrl={videoUrl}
-            />
+            <AudioUploadCard />
           </Box>
 
           {/* Configuration Section */}

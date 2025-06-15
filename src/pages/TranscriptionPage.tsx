@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -24,13 +25,13 @@ import ProgressSteps from '../components/ProgressSteps';
 
 const TranscriptionPage = () => {
   const navigate = useNavigate();
-  const { inputData, setTranscriptionData, setCurrentStep } = useSession();
-  const [isProcessing, setIsProcessing] = useState(true);
+  const { setTranscriptionData, setCurrentStep } = useSession();
   const [processingComplete, setProcessingComplete] = useState(false);
 
   const [mockTranscriptionData] = useState({
     detectedLanguage: 'Hindi',
     speakersFound: 2,
+    confidence: 0.95,
     segments: [
       {
         id: '1',
@@ -64,7 +65,6 @@ const TranscriptionPage = () => {
   useEffect(() => {
     // Simulate processing
     setTimeout(() => {
-      setIsProcessing(false);
       setProcessingComplete(true);
     }, 3000);
   }, []);
@@ -87,8 +87,15 @@ const TranscriptionPage = () => {
 
   const handleContinue = () => {
     setTranscriptionData({
-      ...mockTranscriptionData,
-      segments: segments.map(seg => ({ ...seg, isEditing: false }))
+      detectedLanguage: mockTranscriptionData.detectedLanguage,
+      confidence: mockTranscriptionData.confidence,
+      segments: segments.map(seg => ({ 
+        id: seg.id,
+        speaker: seg.speaker,
+        start: seg.start,
+        end: seg.end,
+        text: seg.text
+      }))
     });
     setCurrentStep('translation');
     navigate('/translation');
@@ -101,8 +108,8 @@ const TranscriptionPage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}> {/* Account for fixed header height */}
-      <Container maxWidth="lg" sx={{ py: 0 }}> {/* Remove top padding since ProgressSteps has its own */}
+    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}>
+      <Container maxWidth="lg" sx={{ py: 0 }}>
         <ProgressSteps />
         
         <Box sx={{ textAlign: 'center', mb: 4, px: 2 }}>

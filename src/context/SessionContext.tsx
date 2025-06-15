@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AudioData {
@@ -5,6 +6,13 @@ interface AudioData {
   url: string | null;
   fileName: string | null;
   duration: number | null;
+}
+
+interface InputData {
+  audioFile: File | null;
+  videoUrl: string;
+  targetLanguage: string;
+  uploadedAt: string;
 }
 
 interface TranscriptionData {
@@ -58,12 +66,14 @@ interface ValidationData {
 interface SessionContextType {
   sessionId: string;
   audioData: AudioData;
+  inputData: InputData | null;
   transcriptionData: TranscriptionData | null;
   translationData: TranslationData | null;
   synthesisData: SynthesisData | null;
   validationData: ValidationData | null;
   currentStep: 'input' | 'transcription' | 'translation' | 'synthesis' | 'validation';
   setAudioData: (data: Partial<AudioData>) => void;
+  setInputData: (data: InputData) => void;
   setTranscriptionData: (data: TranscriptionData) => void;
   setTranslationData: (data: TranslationData) => void;
   setSynthesisData: (data: SynthesisData) => void;
@@ -93,6 +103,7 @@ const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     duration: null,
   });
 
+  const [inputData, setInputData] = useState<InputData | null>(null);
   const [transcriptionData, setTranscriptionData] = useState<TranscriptionData | null>(null);
   const [translationData, setTranslationData] = useState<TranslationData | null>(null);
   const [synthesisData, setSynthesisData] = useState<SynthesisData | null>(null);
@@ -110,6 +121,7 @@ const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       fileName: null,
       duration: null,
     });
+    setInputData(null);
     setTranscriptionData(null);
     setTranslationData(null);
     setSynthesisData(null);
@@ -120,12 +132,14 @@ const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     <SessionContext.Provider value={{
       sessionId,
       audioData,
+      inputData,
       transcriptionData,
       translationData,
       synthesisData,
       validationData,
       currentStep,
       setAudioData,
+      setInputData,
       setTranscriptionData,
       setTranslationData,
       setSynthesisData,
