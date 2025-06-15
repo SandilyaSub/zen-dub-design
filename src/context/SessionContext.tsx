@@ -49,17 +49,27 @@ interface SynthesisData {
   };
 }
 
+interface ValidationData {
+  semanticSimilarity: number;
+  transcriptionAccuracy: number;
+  translationQuality: number;
+  audioQuality: number;
+  overallScore: number;
+}
+
 interface SessionContextType {
   sessionId: string;
   audioData: AudioData;
   transcriptionData: TranscriptionData | null;
   translationData: TranslationData | null;
   synthesisData: SynthesisData | null;
-  currentStep: 'input' | 'transcription' | 'transliteration' | 'translation' | 'synthesis';
+  validationData: ValidationData | null;
+  currentStep: 'input' | 'transcription' | 'translation' | 'synthesis' | 'validation';
   setAudioData: (data: Partial<AudioData>) => void;
   setTranscriptionData: (data: TranscriptionData) => void;
   setTranslationData: (data: TranslationData) => void;
   setSynthesisData: (data: SynthesisData) => void;
+  setValidationData: (data: ValidationData) => void;
   setCurrentStep: (step: SessionContextType['currentStep']) => void;
   resetSession: () => void;
 }
@@ -88,6 +98,7 @@ const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [transcriptionData, setTranscriptionData] = useState<TranscriptionData | null>(null);
   const [translationData, setTranslationData] = useState<TranslationData | null>(null);
   const [synthesisData, setSynthesisData] = useState<SynthesisData | null>(null);
+  const [validationData, setValidationData] = useState<ValidationData | null>(null);
 
   const setAudioData = (data: Partial<AudioData>) => {
     setAudioDataState(prev => ({ ...prev, ...data }));
@@ -104,6 +115,7 @@ const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setTranscriptionData(null);
     setTranslationData(null);
     setSynthesisData(null);
+    setValidationData(null);
   };
 
   return (
@@ -113,11 +125,13 @@ const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       transcriptionData,
       translationData,
       synthesisData,
+      validationData,
       currentStep,
       setAudioData,
       setTranscriptionData,
       setTranslationData,
       setSynthesisData,
+      setValidationData,
       setCurrentStep,
       resetSession,
     }}>

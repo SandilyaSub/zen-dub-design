@@ -5,9 +5,9 @@ import { CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import TranscriptionPage from './pages/TranscriptionPage';
-import TransliterationPage from './pages/TransliterationPage';
 import TranslationPage from './pages/TranslationPage';
 import SynthesisPage from './pages/SynthesisPage';
+import ValidationPage from './pages/ValidationPage';
 import SessionProvider from './context/SessionContext';
 
 const theme = createTheme({
@@ -65,9 +65,9 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/transcription" element={<TranscriptionPage />} />
-            <Route path="/transliteration" element={<TransliterationPage />} />
             <Route path="/translation" element={<TranslationPage />} />
             <Route path="/synthesis" element={<SynthesisPage />} />
+            <Route path="/validation" element={<ValidationPage />} />
           </Routes>
         </Router>
       </SessionProvider>

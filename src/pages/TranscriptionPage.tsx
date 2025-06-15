@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -112,8 +111,8 @@ const TranscriptionPage = () => {
       detectedLanguage,
       confidence: 0.94
     });
-    setCurrentStep('transliteration');
-    navigate('/transliteration');
+    setCurrentStep('translation');
+    navigate('/translation');
   };
 
   const formatTime = (seconds: number) => {
