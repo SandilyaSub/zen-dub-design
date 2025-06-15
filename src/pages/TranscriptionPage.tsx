@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -203,7 +204,7 @@ const TranscriptionPage = () => {
                 fullWidth
                 size="large"
               >
-                Continue to Transliteration
+                Continue to Translation
               </Button>
             </CardContent>
           </Card>
@@ -224,7 +225,7 @@ const TranscriptionPage = () => {
                 </Box>
               ) : (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {segments.map((segment) => (
+                  {segments.map((segment, index) => (
                     <Paper 
                       key={segment.id} 
                       elevation={1} 
@@ -232,6 +233,12 @@ const TranscriptionPage = () => {
                     >
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Chip 
+                            label={`Segment ${index + 1}`}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                          />
                           <FormControl size="small" sx={{ minWidth: 120 }}>
                             <InputLabel>Speaker</InputLabel>
                             <Select
