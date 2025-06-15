@@ -25,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import ProgressSteps from '../components/ProgressSteps';
 
 const TranscriptionPage = () => {
   const navigate = useNavigate();
@@ -32,7 +33,6 @@ const TranscriptionPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [detectedLanguage, setDetectedLanguage] = useState('');
-  const [confidence, setConfidence] = useState(0);
   const [segments, setSegments] = useState<Array<{
     id: string;
     speaker: string;
@@ -63,7 +63,6 @@ const TranscriptionPage = () => {
           
           // Mock transcription results
           setDetectedLanguage('Hindi');
-          setConfidence(0.94);
           setSegments([
             {
               id: '1',
@@ -111,7 +110,7 @@ const TranscriptionPage = () => {
     setTranscriptionData({
       segments,
       detectedLanguage,
-      confidence
+      confidence: 0.94
     });
     setCurrentStep('transliteration');
     navigate('/transliteration');
@@ -125,6 +124,8 @@ const TranscriptionPage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ProgressSteps />
+      
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
           Speech Recognition & Diarization
@@ -168,9 +169,6 @@ const TranscriptionPage = () => {
                   <Paper sx={{ p: 2, mb: 2 }}>
                     <Typography variant="body2" sx={{ mb: 1 }}>
                       <strong>Detected Language:</strong> {detectedLanguage}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Confidence:</strong> {(confidence * 100).toFixed(1)}%
                     </Typography>
                     <Typography variant="body2">
                       <strong>Speakers Found:</strong> {new Set(segments.map(s => s.speaker)).size}
@@ -290,4 +288,3 @@ const TranscriptionPage = () => {
 };
 
 export default TranscriptionPage;
-

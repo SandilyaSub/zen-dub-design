@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -22,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import ProgressSteps from '../components/ProgressSteps';
 
 const TRANSLATION_PROVIDERS = [
   { id: 'google', name: 'Google Translate', description: 'Fast and reliable' },
@@ -92,6 +92,8 @@ const TranslationPage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ProgressSteps />
+      
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
           Multi-Provider Translation
@@ -242,4 +244,3 @@ const TranslationPage = () => {
 };
 
 export default TranslationPage;
-
