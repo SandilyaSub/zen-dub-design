@@ -25,8 +25,8 @@ const HomePage = () => {
   const navigate = useNavigate();
   const { setCurrentStep, setInputData } = useSession();
   const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [videoUrl, setVideoUrl] = useState('');
+  const [audioFile] = useState<File | null>(null);
+  const [videoUrl] = useState('');
   const [uploadCompleted, setUploadCompleted] = useState(false);
 
   const handleUpload = (fileName: string) => {
