@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -28,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import ProgressSteps from '../components/ProgressSteps';
 
 const SUPPORTED_LANGUAGES = [
   'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Gujarati', 'Marathi', 
@@ -98,6 +97,8 @@ const HomePage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ProgressSteps />
+      
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
           Audio Input & Setup
@@ -286,15 +287,30 @@ const HomePage = () => {
 
           <Card sx={{ mt: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Supported Features
+              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                <CheckCircle sx={{ mr: 1, color: '#10b981', fontSize: 20 }} />
+                Advanced Features
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Powered by state-of-the-art AI models for professional-grade results:
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Chip label="Speaker Diarization" size="small" />
-                <Chip label="VAD Segmentation" size="small" />
-                <Chip label="Multi-format Support" size="small" />
-                <Chip label="Video Audio Extraction" size="small" />
-                <Chip label="Real-time Recording" size="small" />
+                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
+                  Speaker identification & separation
+                </Typography>
+                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
+                  Smart audio segmentation
+                </Typography>
+                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
+                  Multi-format audio support
+                </Typography>
+                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
+                  Video-to-audio extraction
+                </Typography>
               </Box>
             </CardContent>
           </Card>
@@ -305,4 +321,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
