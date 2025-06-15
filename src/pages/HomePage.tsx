@@ -27,6 +27,12 @@ const HomePage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
+  const [uploadCompleted, setUploadCompleted] = useState(false);
+
+  const handleUpload = (fileName: string) => {
+    console.log('Upload completed:', fileName);
+    setUploadCompleted(true);
+  };
 
   const handleContinue = () => {
     // Store input data in session
@@ -58,7 +64,11 @@ const HomePage = () => {
         <Box sx={{ display: 'flex', gap: 4, mb: 4 }}>
           {/* Audio Upload Section */}
           <Box sx={{ flex: 2 }}>
-            <AudioUploadCard />
+            <AudioUploadCard 
+              onUpload={handleUpload}
+              isActive={true}
+              isCompleted={uploadCompleted}
+            />
           </Box>
 
           {/* Configuration Section */}
