@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -12,9 +11,7 @@ import {
   Chip
 } from '@mui/material';
 import { 
-  Transcribe, 
-  PlayArrow,
-  Pause
+  Transcribe
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
