@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -8,11 +7,11 @@ import {
   Typography, 
   Button,
   LinearProgress,
-  Grid2 as Grid,
   Paper,
   Chip,
   Divider
 } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2';
 import { 
   CheckCircle,
   Assessment,
@@ -199,8 +198,8 @@ const ValidationPage = () => {
                   </Typography>
                 </Box>
               ) : (
-                <Grid container spacing={3}>
-                  <Grid xs={12} sm={6}>
+                <Grid2 container spacing={3}>
+                  <Grid2 xs={12} sm={6}>
                     <Paper sx={{ p: 3, textAlign: 'center' }}>
                       <Translate sx={{ fontSize: 32, color: getScoreColor(metrics.semanticSimilarity), mb: 1 }} />
                       <Typography variant="h5" sx={{ color: getScoreColor(metrics.semanticSimilarity), mb: 1 }}>
@@ -219,9 +218,9 @@ const ValidationPage = () => {
                         }}
                       />
                     </Paper>
-                  </Grid>
+                  </Grid2>
 
-                  <Grid xs={12} sm={6}>
+                  <Grid2 xs={12} sm={6}>
                     <Paper sx={{ p: 3, textAlign: 'center' }}>
                       <RecordVoiceOver sx={{ fontSize: 32, color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }} />
                       <Typography variant="h5" sx={{ color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }}>
@@ -240,9 +239,9 @@ const ValidationPage = () => {
                         }}
                       />
                     </Paper>
-                  </Grid>
+                  </Grid2>
 
-                  <Grid xs={12} sm={6}>
+                  <Grid2 xs={12} sm={6}>
                     <Paper sx={{ p: 3, textAlign: 'center' }}>
                       <Assessment sx={{ fontSize: 32, color: getScoreColor(metrics.translationQuality), mb: 1 }} />
                       <Typography variant="h5" sx={{ color: getScoreColor(metrics.translationQuality), mb: 1 }}>
@@ -261,9 +260,9 @@ const ValidationPage = () => {
                         }}
                       />
                     </Paper>
-                  </Grid>
+                  </Grid2>
 
-                  <Grid xs={12} sm={6}>
+                  <Grid2 xs={12} sm={6}>
                     <Paper sx={{ p: 3, textAlign: 'center' }}>
                       <VolumeUp sx={{ fontSize: 32, color: getScoreColor(metrics.audioQuality), mb: 1 }} />
                       <Typography variant="h5" sx={{ color: getScoreColor(metrics.audioQuality), mb: 1 }}>
@@ -282,8 +281,8 @@ const ValidationPage = () => {
                         }}
                       />
                     </Paper>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               )}
             </CardContent>
           </Card>
