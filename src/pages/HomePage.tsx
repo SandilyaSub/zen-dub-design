@@ -92,19 +92,19 @@ const HomePage = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 3 }}>
       <ProgressSteps />
       
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
           Audio Input & Setup
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           Upload audio or extract from video
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
         <Box sx={{ flex: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
@@ -125,7 +125,7 @@ const HomePage = () => {
                         sx={{ 
                           border: '2px dashed #cbd5e1',
                           borderRadius: 2,
-                          p: 4,
+                          p: 3,
                           mb: 3,
                           textAlign: 'center',
                           backgroundColor: '#f8fafc',
@@ -136,7 +136,7 @@ const HomePage = () => {
                           }
                         }}
                       >
-                        <CloudUpload sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
+                        <CloudUpload sx={{ fontSize: 40, color: '#94a3b8', mb: 1 }} />
                         <Typography variant="body1" color="text.secondary">
                           Choose file or drag and drop
                         </Typography>
@@ -158,7 +158,7 @@ const HomePage = () => {
                     </>
                   ) : (
                     <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
-                      <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
+                      <CheckCircle sx={{ fontSize: 40, color: '#10b981', mb: 2 }} />
                       <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
                         Upload Complete!
                       </Typography>
@@ -209,7 +209,7 @@ const HomePage = () => {
                     </>
                   ) : (
                     <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
-                      <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
+                      <CheckCircle sx={{ fontSize: 40, color: '#10b981', mb: 2 }} />
                       <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
                         Audio Extraction Complete!
                       </Typography>
@@ -236,7 +236,7 @@ const HomePage = () => {
                   <LinearProgress 
                     variant="determinate" 
                     value={uploadProgress}
-                    sx={{ height: 8, borderRadius: 4 }}
+                    sx={{ height: 6, borderRadius: 3 }}
                   />
                 </Box>
               )}
@@ -246,8 +246,8 @@ const HomePage = () => {
 
         <Box sx={{ flex: 1 }}>
           <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
                 Target Language
               </Typography>
               

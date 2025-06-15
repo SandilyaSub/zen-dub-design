@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -124,7 +125,7 @@ const SynthesisPage = () => {
 
   if (!translationData) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="md" sx={{ py: 3 }}>
         <Typography variant="h6" color="text.secondary">
           No translation data available. Please complete the translation step first.
         </Typography>
@@ -133,11 +134,11 @@ const SynthesisPage = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 3 }}>
       <ProgressSteps />
       
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
           Speech Synthesis
         </Typography>
         <Typography variant="body1" color="text.secondary">
@@ -146,8 +147,8 @@ const SynthesisPage = () => {
       </Box>
 
       {/* Speaker Mapping Configuration */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
+      <Card sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Person />
             Speaker Voice Mapping ({uniqueSpeakers.length} speakers detected)
@@ -215,8 +216,8 @@ const SynthesisPage = () => {
       </Card>
 
       {/* Generate Speech Section */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
+      <Card sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h6" gutterBottom>
               Generate Synthesized Speech
@@ -251,7 +252,7 @@ const SynthesisPage = () => {
       {/* Audio Player Section */}
       {synthesisComplete && audioUrl && (
         <Card>
-          <CardContent>
+          <CardContent sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PlayArrow />
               Synthesized Audio

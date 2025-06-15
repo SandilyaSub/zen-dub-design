@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -91,20 +92,20 @@ const TranslationPage = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 3 }}>
       <ProgressSteps />
       
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
           Translation
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           Translation from {sourceLanguage} to {targetLanguage}
         </Typography>
       </Box>
 
       <Card>
-        <CardContent>
+        <CardContent sx={{ p: 3 }}>
           {!isTranslating && translatedSegments.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 4 }}>
               <Button
