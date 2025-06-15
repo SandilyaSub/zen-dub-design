@@ -21,7 +21,6 @@ import {
   CloudUpload, 
   AudioFile,
   Link as LinkIcon,
-  Mic,
   CheckCircle,
   PlayArrow
 } from '@mui/icons-material';
@@ -42,7 +41,6 @@ const HomePage = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [isRecording, setIsRecording] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [targetLanguage, setTargetLanguage] = useState('Hindi');
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
@@ -70,26 +68,22 @@ const HomePage = () => {
     if (!videoUrl.trim()) return;
     
     setIsUploading(true);
-    setTimeout(() => {
-      setIsUploading(false);
-      const fileName = 'extracted_audio.mp3';
-      setUploadedFile(fileName);
-      setAudioData({ fileName, url: videoUrl });
-      setVideoUrl('');
-    }, 2000);
-  };
-
-  const handleRecording = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording) {
-      // Start recording
-      setTimeout(() => {
-        setIsRecording(false);
-        const fileName = 'recorded_audio.wav';
-        setUploadedFile(fileName);
-        setAudioData({ fileName, file: null });
-      }, 3000);
-    }
+    setUploadProgress(0);
+    
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsUploading(false);
+          const fileName = 'extracted_audio.mp3';
+          setUploadedFile(fileName);
+          setAudioData({ fileName, url: videoUrl });
+          setVideoUrl('');
+          return 100;
+        }
+        return prev + 20;
+      });
+    }, 300);
   };
 
   const handleContinue = () => {
@@ -106,161 +100,160 @@ const HomePage = () => {
           Audio Input & Setup
         </Typography>
         <Typography variant="h6" color="text.secondary">
-          Upload audio, extract from video, or record directly
+          Upload audio or extract from video
         </Typography>
       </Box>
 
       <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
         <Box sx={{ flex: 2 }}>
-          <Card>
-            <CardContent sx={{ p: 3 }}>
+          <Card sx={{ height: 'fit-content', minHeight: uploadedFile ? '600px' : '500px' }}>
+            <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
                 <Tab icon={<AudioFile />} label="Upload Audio" />
                 <Tab icon={<LinkIcon />} label="Video URL" />
-                <Tab icon={<Mic />} label="Record" />
               </Tabs>
 
-              {activeTab === 0 && (
-                <Box>
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    Upload MP3, WAV, or other audio formats
-                  </Typography>
-                  
-                  {!uploadedFile ? (
-                    <>
-                      <Box 
-                        sx={{ 
-                          border: '2px dashed #cbd5e1',
-                          borderRadius: 2,
-                          p: 4,
-                          mb: 3,
-                          textAlign: 'center',
-                          backgroundColor: '#f8fafc',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            borderColor: '#6366f1',
-                            backgroundColor: '#f1f5f9'
-                          }
-                        }}
-                      >
-                        <CloudUpload sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
-                        <Typography variant="body1" color="text.secondary">
-                          Choose file or drag and drop
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                {activeTab === 0 && (
+                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="body1" sx={{ mb: 2 }}>
+                      Upload MP3, WAV, or other audio formats
+                    </Typography>
+                    
+                    {!uploadedFile ? (
+                      <>
+                        <Box 
+                          sx={{ 
+                            border: '2px dashed #cbd5e1',
+                            borderRadius: 2,
+                            p: 4,
+                            mb: 3,
+                            textAlign: 'center',
+                            backgroundColor: '#f8fafc',
+                            cursor: 'pointer',
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            minHeight: '200px',
+                            '&:hover': {
+                              borderColor: '#6366f1',
+                              backgroundColor: '#f1f5f9'
+                            }
+                          }}
+                        >
+                          <CloudUpload sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
+                          <Typography variant="body1" color="text.secondary">
+                            Choose file or drag and drop
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Supports MP3, WAV, M4A, FLAC
+                          </Typography>
+                        </Box>
+
+                        <Button
+                          variant="contained"
+                          onClick={handleFileUpload}
+                          disabled={isUploading}
+                          fullWidth
+                          size="large"
+                          startIcon={isUploading ? undefined : <CloudUpload />}
+                        >
+                          {isUploading ? 'Uploading...' : 'Choose Audio File'}
+                        </Button>
+                      </>
+                    ) : (
+                      <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
+                        <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
+                          Upload Complete!
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Supports MP3, WAV, M4A, FLAC
+                        <Chip 
+                          label={uploadedFile} 
+                          variant="outlined" 
+                          size="medium"
+                          icon={<PlayArrow />}
+                          sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 3 }}
+                        />
+                        <Box sx={{ mt: 2 }}>
+                          <audio controls style={{ width: '100%' }}>
+                            <source src="#" type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                          </audio>
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
+                )}
+
+                {activeTab === 1 && (
+                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="body1" sx={{ mb: 2 }}>
+                      Extract audio from YouTube, Instagram, or other video platforms
+                    </Typography>
+                    
+                    {!uploadedFile ? (
+                      <>
+                        <TextField
+                          fullWidth
+                          label="Video URL"
+                          placeholder="Paste YouTube, Instagram, or other video URL"
+                          value={videoUrl}
+                          onChange={(e) => setVideoUrl(e.target.value)}
+                          sx={{ mb: 3, flex: 1 }}
+                        />
+
+                        <Button
+                          variant="contained"
+                          onClick={handleVideoUrlUpload}
+                          disabled={!videoUrl.trim() || isUploading}
+                          fullWidth
+                          size="large"
+                        >
+                          {isUploading ? 'Extracting Audio...' : 'Extract Audio'}
+                        </Button>
+                      </>
+                    ) : (
+                      <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
+                        <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
+                          Audio Extraction Complete!
                         </Typography>
+                        <Chip 
+                          label={uploadedFile} 
+                          variant="outlined" 
+                          size="medium"
+                          icon={<PlayArrow />}
+                          sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 3 }}
+                        />
+                        <Box sx={{ mt: 2 }}>
+                          <audio controls style={{ width: '100%' }}>
+                            <source src="#" type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                          </audio>
+                        </Box>
                       </Box>
+                    )}
+                  </Box>
+                )}
 
-                      <Button
-                        variant="contained"
-                        onClick={handleFileUpload}
-                        disabled={isUploading}
-                        fullWidth
-                        size="large"
-                        startIcon={isUploading ? undefined : <CloudUpload />}
-                      >
-                        {isUploading ? 'Uploading...' : 'Choose Audio File'}
-                      </Button>
-                    </>
-                  ) : (
-                    <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
-                      <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
-                      <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
-                        Upload Complete!
-                      </Typography>
-                      <Chip 
-                        label={uploadedFile} 
-                        variant="outlined" 
-                        size="medium"
-                        icon={<PlayArrow />}
-                        sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 3 }}
-                      />
-                      <Box sx={{ mt: 2 }}>
-                        <audio controls style={{ width: '100%' }}>
-                          <source src="#" type="audio/mpeg" />
-                          Your browser does not support the audio element.
-                        </audio>
-                      </Box>
-                    </Box>
-                  )}
-                </Box>
-              )}
-
-              {activeTab === 1 && (
-                <Box>
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    Extract audio from YouTube, Instagram, or other video platforms
-                  </Typography>
-                  
-                  <TextField
-                    fullWidth
-                    label="Video URL"
-                    placeholder="Paste YouTube, Instagram, or other video URL"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    sx={{ mb: 3 }}
-                  />
-
-                  <Button
-                    variant="contained"
-                    onClick={handleVideoUrlUpload}
-                    disabled={!videoUrl.trim() || isUploading}
-                    fullWidth
-                    size="large"
-                  >
-                    {isUploading ? 'Extracting Audio...' : 'Extract Audio'}
-                  </Button>
-                </Box>
-              )}
-
-              {activeTab === 2 && (
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Record audio directly from your microphone
-                  </Typography>
-                  
-                  <Button
-                    variant={isRecording ? "outlined" : "contained"}
-                    onClick={handleRecording}
-                    size="large"
-                    color={isRecording ? "error" : "primary"}
-                    sx={{ 
-                      minWidth: 200, 
-                      minHeight: 60,
-                      fontSize: '1.1rem'
-                    }}
-                  >
-                    {isRecording ? 'Stop Recording' : 'Start Recording'}
-                  </Button>
-
-                  {isRecording && (
-                    <Box sx={{ mt: 3 }}>
-                      <Typography variant="body2" color="error" sx={{ mb: 1 }}>
-                        Recording in progress...
-                      </Typography>
-                      <LinearProgress color="error" />
-                    </Box>
-                  )}
-                </Box>
-              )}
-
-              {isUploading && activeTab !== 2 && !uploadedFile && (
-                <Box sx={{ mt: 2 }}>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={uploadProgress}
-                    sx={{ height: 8, borderRadius: 4 }}
-                  />
-                </Box>
-              )}
+                {isUploading && !uploadedFile && (
+                  <Box sx={{ mt: 2 }}>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={uploadProgress}
+                      sx={{ height: 8, borderRadius: 4 }}
+                    />
+                  </Box>
+                )}
+              </Box>
             </CardContent>
           </Card>
         </Box>
 
-        <Box sx={{ flex: 1 }}>
-          <Card>
-            <CardContent>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Card sx={{ height: 'fit-content', minHeight: uploadedFile ? '600px' : '500px' }}>
+            <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Typography variant="h6" sx={{ mb: 3 }}>
                 Target Language
               </Typography>
@@ -283,6 +276,8 @@ const HomePage = () => {
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 Please specify the language in which you desire the output audio.
               </Typography>
+
+              <Box sx={{ flex: 1 }} />
 
               <Button
                 variant="contained" 
