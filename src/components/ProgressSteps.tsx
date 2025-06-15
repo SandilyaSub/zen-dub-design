@@ -5,9 +5,9 @@ import { useSession } from '../context/SessionContext';
 const steps = [
   { label: 'Input', key: 'input' },
   { label: 'Transcription', key: 'transcription' },
+  { label: 'Transliteration', key: 'transliteration' },
   { label: 'Translation', key: 'translation' },
-  { label: 'Synthesis', key: 'synthesis' },
-  { label: 'Validation', key: 'validation' }
+  { label: 'Synthesis', key: 'synthesis' }
 ];
 
 const ProgressSteps = () => {
@@ -17,9 +17,9 @@ const ProgressSteps = () => {
     switch (currentStep) {
       case 'input': return 0;
       case 'transcription': return 1;
-      case 'translation': return 2;
-      case 'synthesis': return 3;
-      case 'validation': return 4;
+      case 'transliteration': return 2;
+      case 'translation': return 3;
+      case 'synthesis': return 4;
       default: return 0;
     }
   };
