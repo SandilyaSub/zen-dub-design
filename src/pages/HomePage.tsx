@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -125,39 +126,64 @@ const HomePage = () => {
                     Upload MP3, WAV, or other audio formats
                   </Typography>
                   
-                  <Box 
-                    sx={{ 
-                      border: '2px dashed #cbd5e1',
-                      borderRadius: 2,
-                      p: 4,
-                      mb: 3,
-                      textAlign: 'center',
-                      backgroundColor: '#f8fafc',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        borderColor: '#6366f1',
-                        backgroundColor: '#f1f5f9'
-                      }
-                    }}
-                  >
-                    <CloudUpload sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
-                    <Typography variant="body1" color="text.secondary">
-                      Choose file or drag and drop
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Supports MP3, WAV, M4A, FLAC
-                    </Typography>
-                  </Box>
+                  {!uploadedFile ? (
+                    <>
+                      <Box 
+                        sx={{ 
+                          border: '2px dashed #cbd5e1',
+                          borderRadius: 2,
+                          p: 4,
+                          mb: 3,
+                          textAlign: 'center',
+                          backgroundColor: '#f8fafc',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            borderColor: '#6366f1',
+                            backgroundColor: '#f1f5f9'
+                          }
+                        }}
+                      >
+                        <CloudUpload sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
+                        <Typography variant="body1" color="text.secondary">
+                          Choose file or drag and drop
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Supports MP3, WAV, M4A, FLAC
+                        </Typography>
+                      </Box>
 
-                  <Button
-                    variant="contained"
-                    onClick={handleFileUpload}
-                    disabled={isUploading}
-                    fullWidth
-                    size="large"
-                  >
-                    {isUploading ? 'Uploading...' : 'Choose Audio File'}
-                  </Button>
+                      <Button
+                        variant="contained"
+                        onClick={handleFileUpload}
+                        disabled={isUploading}
+                        fullWidth
+                        size="large"
+                        startIcon={isUploading ? undefined : <CloudUpload />}
+                      >
+                        {isUploading ? 'Uploading...' : 'Choose Audio File'}
+                      </Button>
+                    </>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
+                      <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
+                      <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
+                        Upload Complete!
+                      </Typography>
+                      <Chip 
+                        label={uploadedFile} 
+                        variant="outlined" 
+                        size="medium"
+                        icon={<PlayArrow />}
+                        sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 3 }}
+                      />
+                      <Box sx={{ mt: 2 }}>
+                        <audio controls style={{ width: '100%' }}>
+                          <source src="#" type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
               )}
 
@@ -219,28 +245,12 @@ const HomePage = () => {
                 </Box>
               )}
 
-              {isUploading && activeTab !== 2 && (
+              {isUploading && activeTab !== 2 && !uploadedFile && (
                 <Box sx={{ mt: 2 }}>
                   <LinearProgress 
                     variant="determinate" 
                     value={uploadProgress}
                     sx={{ height: 8, borderRadius: 4 }}
-                  />
-                </Box>
-              )}
-
-              {uploadedFile && (
-                <Box sx={{ mt: 3, textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
-                  <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
-                  <Typography variant="h6" sx={{ color: '#059669', mb: 1 }}>
-                    Upload Complete!
-                  </Typography>
-                  <Chip 
-                    label={uploadedFile} 
-                    variant="outlined" 
-                    size="medium"
-                    icon={<PlayArrow />}
-                    sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981' }}
                   />
                 </Box>
               )}

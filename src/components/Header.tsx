@@ -25,17 +25,28 @@ const Header = () => {
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Translate sx={{ fontSize: 28, color: 'white' }} />
-          <Typography 
-            variant="h5" 
-            component="h1" 
-            sx={{ 
-              fontWeight: 600,
-              color: 'white',
-              letterSpacing: '-0.025em'
-            }}
-          >
-            Indic-Translator
-          </Typography>
+          <Box>
+            <Typography 
+              variant="h5" 
+              component="h1" 
+              sx={{ 
+                fontWeight: 600,
+                color: 'white',
+                letterSpacing: '-0.025em'
+              }}
+            >
+              Indic-Translator
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '0.875rem'
+              }}
+            >
+              Speech-to-Speech Translation for Indian Languages
+            </Typography>
+          </Box>
         </Box>
 
         <Button
@@ -51,19 +62,6 @@ const Header = () => {
           New Session
         </Button>
       </Toolbar>
-      
-      <Box sx={{ px: 2, pb: 1 }}>
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            color: 'rgba(255, 255, 255, 0.8)',
-            fontSize: '0.875rem',
-            textAlign: 'center'
-          }}
-        >
-          Speech-to-Speech Translation for Indian Languages
-        </Typography>
-      </Box>
     </AppBar>
   );
 };
