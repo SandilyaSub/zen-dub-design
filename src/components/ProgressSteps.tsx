@@ -25,23 +25,12 @@ const ProgressSteps = () => {
   };
 
   return (
-    <Box sx={{ 
-      width: '100%', 
-      maxWidth: '1000px',
-      mx: 'auto',
-      mb: 4,
-      px: { xs: 2, md: 3 },
-      mt: 3
-    }}>
+    <Box sx={{ width: '100%', mb: 3, px: 2 }}>
       <Stepper activeStep={getActiveStep()} alternativeLabel>
         {steps.map((step) => (
           <Step key={step.key}>
             <StepLabel>
-              <Typography variant="body2" sx={{ 
-                fontWeight: 500, 
-                fontSize: '0.875rem',
-                color: 'text.primary'
-              }}>
+              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
                 {step.label}
               </Typography>
             </StepLabel>

@@ -92,10 +92,10 @@ const TranslationPage = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 3, minHeight: 'calc(100vh - 80px)' }}>
+    <Container maxWidth="md" sx={{ py: 3 }}>
       <ProgressSteps />
       
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
           Translation
         </Typography>
