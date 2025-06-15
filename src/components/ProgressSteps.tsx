@@ -28,9 +28,10 @@ const ProgressSteps = () => {
     <Box sx={{ 
       width: '100%', 
       mb: 4, 
-      px: 2,
-      pt: 3, // Consistent top padding
-      pb: 2  // Consistent bottom padding
+      px: 3,
+      pt: 4, // Fixed top padding
+      pb: 3, // Fixed bottom padding
+      backgroundColor: '#f8fafc'
     }}>
       <Stepper activeStep={getActiveStep()} alternativeLabel>
         {steps.map((step) => (

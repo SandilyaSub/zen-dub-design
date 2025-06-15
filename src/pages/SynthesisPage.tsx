@@ -133,15 +133,15 @@ const SynthesisPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 100px)' }}> {/* Account for fixed header height */}
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}> {/* Account for fixed header height */}
+      <Container maxWidth="lg" sx={{ py: 0 }}> {/* Remove top padding since ProgressSteps has its own */}
         <ProgressSteps />
         
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
+        <Box sx={{ textAlign: 'center', mb: 4, px: 2 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#1f2937' }}>
             Speech Synthesis
           </Typography>
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.125rem' }}>
             Configure voice settings for each speaker and generate synthesized speech
           </Typography>
         </Box>
