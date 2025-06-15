@@ -23,8 +23,10 @@ import {
   VolumeUp,
   PlayArrow,
   Download,
-  Person
+  Person,
+  ArrowForward
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
 import ProgressSteps from '../components/ProgressSteps';
 
@@ -38,7 +40,8 @@ const VOICE_OPTIONS = [
 ];
 
 const SynthesisPage = () => {
-  const { translationData, setSynthesisData } = useSession();
+  const navigate = useNavigate();
+  const { translationData, setSynthesisData, setCurrentStep } = useSession();
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthesisComplete, setSynthesisComplete] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -112,6 +115,11 @@ const SynthesisPage = () => {
       link.click();
       document.body.removeChild(link);
     }
+  };
+
+  const handleContinueToValidation = () => {
+    setCurrentStep('validation');
+    navigate('/validation');
   };
 
   if (!translationData) {
@@ -263,6 +271,14 @@ const SynthesisPage = () => {
                 startIcon={<Download />}
               >
                 Download Audio
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleContinueToValidation}
+                startIcon={<ArrowForward />}
+                size="large"
+              >
+                Continue to Validation
               </Button>
             </Box>
           </CardContent>
