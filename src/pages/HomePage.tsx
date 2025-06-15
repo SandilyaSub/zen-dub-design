@@ -104,161 +104,161 @@ const HomePage = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+        {/* Main Upload Section */}
         <Box sx={{ flex: 2 }}>
-          <Card sx={{ height: 'fit-content', minHeight: uploadedFile ? '600px' : '500px' }}>
-            <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ p: 3 }}>
               <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
                 <Tab icon={<AudioFile />} label="Upload Audio" />
                 <Tab icon={<LinkIcon />} label="Video URL" />
               </Tabs>
 
-              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {activeTab === 0 && (
-                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      Upload MP3, WAV, or other audio formats
-                    </Typography>
-                    
-                    {!uploadedFile ? (
-                      <>
-                        <Box 
-                          sx={{ 
-                            border: '2px dashed #cbd5e1',
-                            borderRadius: 2,
-                            p: 4,
-                            mb: 3,
-                            textAlign: 'center',
-                            backgroundColor: '#f8fafc',
-                            cursor: 'pointer',
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            minHeight: '200px',
-                            '&:hover': {
-                              borderColor: '#6366f1',
-                              backgroundColor: '#f1f5f9'
-                            }
-                          }}
-                        >
-                          <CloudUpload sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
-                          <Typography variant="body1" color="text.secondary">
-                            Choose file or drag and drop
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Supports MP3, WAV, M4A, FLAC
-                          </Typography>
-                        </Box>
-
-                        <Button
-                          variant="contained"
-                          onClick={handleFileUpload}
-                          disabled={isUploading}
-                          fullWidth
-                          size="large"
-                          startIcon={isUploading ? undefined : <CloudUpload />}
-                        >
-                          {isUploading ? 'Uploading...' : 'Choose Audio File'}
-                        </Button>
-                      </>
-                    ) : (
-                      <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
-                        <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
-                          Upload Complete!
+              {activeTab === 0 && (
+                <Box>
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    Upload MP3, WAV, or other audio formats
+                  </Typography>
+                  
+                  {!uploadedFile ? (
+                    <>
+                      <Box 
+                        sx={{ 
+                          border: '2px dashed #cbd5e1',
+                          borderRadius: 2,
+                          p: 4,
+                          mb: 3,
+                          textAlign: 'center',
+                          backgroundColor: '#f8fafc',
+                          cursor: 'pointer',
+                          minHeight: '120px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          '&:hover': {
+                            borderColor: '#6366f1',
+                            backgroundColor: '#f1f5f9'
+                          }
+                        }}
+                      >
+                        <CloudUpload sx={{ fontSize: 40, color: '#94a3b8', mb: 1 }} />
+                        <Typography variant="body1" color="text.secondary">
+                          Choose file or drag and drop
                         </Typography>
-                        <Chip 
-                          label={uploadedFile} 
-                          variant="outlined" 
-                          size="medium"
-                          icon={<PlayArrow />}
-                          sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 3 }}
-                        />
-                        <Box sx={{ mt: 2 }}>
-                          <audio controls style={{ width: '100%' }}>
-                            <source src="#" type="audio/mpeg" />
-                            Your browser does not support the audio element.
-                          </audio>
-                        </Box>
-                      </Box>
-                    )}
-                  </Box>
-                )}
-
-                {activeTab === 1 && (
-                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      Extract audio from YouTube, Instagram, or other video platforms
-                    </Typography>
-                    
-                    {!uploadedFile ? (
-                      <>
-                        <TextField
-                          fullWidth
-                          label="Video URL"
-                          placeholder="Paste YouTube, Instagram, or other video URL"
-                          value={videoUrl}
-                          onChange={(e) => setVideoUrl(e.target.value)}
-                          sx={{ mb: 3, flex: 1 }}
-                        />
-
-                        <Button
-                          variant="contained"
-                          onClick={handleVideoUrlUpload}
-                          disabled={!videoUrl.trim() || isUploading}
-                          fullWidth
-                          size="large"
-                        >
-                          {isUploading ? 'Extracting Audio...' : 'Extract Audio'}
-                        </Button>
-                      </>
-                    ) : (
-                      <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <CheckCircle sx={{ fontSize: 48, color: '#10b981', mb: 2 }} />
-                        <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
-                          Audio Extraction Complete!
+                        <Typography variant="body2" color="text.secondary">
+                          Supports MP3, WAV, M4A, FLAC
                         </Typography>
-                        <Chip 
-                          label={uploadedFile} 
-                          variant="outlined" 
-                          size="medium"
-                          icon={<PlayArrow />}
-                          sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 3 }}
-                        />
-                        <Box sx={{ mt: 2 }}>
-                          <audio controls style={{ width: '100%' }}>
-                            <source src="#" type="audio/mpeg" />
-                            Your browser does not support the audio element.
-                          </audio>
-                        </Box>
                       </Box>
-                    )}
-                  </Box>
-                )}
 
-                {isUploading && !uploadedFile && (
-                  <Box sx={{ mt: 2 }}>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={uploadProgress}
-                      sx={{ height: 8, borderRadius: 4 }}
-                    />
-                  </Box>
-                )}
-              </Box>
+                      <Button
+                        variant="contained"
+                        onClick={handleFileUpload}
+                        disabled={isUploading}
+                        fullWidth
+                        size="large"
+                        startIcon={isUploading ? undefined : <CloudUpload />}
+                      >
+                        {isUploading ? 'Uploading...' : 'Choose Audio File'}
+                      </Button>
+                    </>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
+                      <CheckCircle sx={{ fontSize: 40, color: '#10b981', mb: 2 }} />
+                      <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
+                        Upload Complete!
+                      </Typography>
+                      <Chip 
+                        label={uploadedFile} 
+                        variant="outlined" 
+                        size="medium"
+                        icon={<PlayArrow />}
+                        sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 2 }}
+                      />
+                      <Box sx={{ mt: 2 }}>
+                        <audio controls style={{ width: '100%' }}>
+                          <source src="#" type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              )}
+
+              {activeTab === 1 && (
+                <Box>
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    Extract audio from YouTube, Instagram, or other video platforms
+                  </Typography>
+                  
+                  {!uploadedFile ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        label="Video URL"
+                        placeholder="Paste YouTube, Instagram, or other video URL"
+                        value={videoUrl}
+                        onChange={(e) => setVideoUrl(e.target.value)}
+                        sx={{ mb: 3 }}
+                      />
+
+                      <Button
+                        variant="contained"
+                        onClick={handleVideoUrlUpload}
+                        disabled={!videoUrl.trim() || isUploading}
+                        fullWidth
+                        size="large"
+                      >
+                        {isUploading ? 'Extracting Audio...' : 'Extract Audio'}
+                      </Button>
+                    </>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', p: 3, backgroundColor: '#f0fdf4', borderRadius: 2 }}>
+                      <CheckCircle sx={{ fontSize: 40, color: '#10b981', mb: 2 }} />
+                      <Typography variant="h6" sx={{ color: '#059669', mb: 2 }}>
+                        Audio Extraction Complete!
+                      </Typography>
+                      <Chip 
+                        label={uploadedFile} 
+                        variant="outlined" 
+                        size="medium"
+                        icon={<PlayArrow />}
+                        sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 2 }}
+                      />
+                      <Box sx={{ mt: 2 }}>
+                        <audio controls style={{ width: '100%' }}>
+                          <source src="#" type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              )}
+
+              {isUploading && !uploadedFile && (
+                <Box sx={{ mt: 2 }}>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={uploadProgress}
+                    sx={{ height: 8, borderRadius: 4 }}
+                  />
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Box>
 
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Card sx={{ height: 'fit-content', minHeight: uploadedFile ? '600px' : '500px' }}>
-            <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Sidebar Section */}
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Language Selection */}
+          <Card>
+            <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ mb: 3 }}>
                 Target Language
               </Typography>
               
-              <FormControl fullWidth sx={{ mb: 3 }}>
+              <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Select Target Language</InputLabel>
                 <Select
                   value={targetLanguage}
@@ -277,8 +277,6 @@ const HomePage = () => {
                 Please specify the language in which you desire the output audio.
               </Typography>
 
-              <Box sx={{ flex: 1 }} />
-
               <Button
                 variant="contained" 
                 onClick={handleContinue}
@@ -291,9 +289,8 @@ const HomePage = () => {
             </CardContent>
           </Card>
 
-          <Box sx={{ mt: 2 }}>
-            <AdvancedFeatures />
-          </Box>
+          {/* Advanced Features */}
+          <AdvancedFeatures />
         </Box>
       </Box>
     </Container>
