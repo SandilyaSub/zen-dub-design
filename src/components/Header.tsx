@@ -1,24 +1,12 @@
+
 import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { Translate } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
 
 const Header = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { resetSession } = useSession();
-
-  const navigationItems = [
-    { path: '/', label: 'Input', step: 'input' },
-    { path: '/transcription', label: 'Transcription', step: 'transcription' },
-    { path: '/transliteration', label: 'Transliteration', step: 'transliteration' },
-    { path: '/translation', label: 'Translation', step: 'translation' },
-    { path: '/synthesis', label: 'Synthesis', step: 'synthesis' },
-  ];
-
-  const handleNavigation = (path: string) => {
-    navigate(path);
-  };
 
   const handleReset = () => {
     resetSession();
@@ -48,25 +36,6 @@ const Header = () => {
           >
             Indic-Translator
           </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          {navigationItems.map((item) => (
-            <Button
-              key={item.path}
-              onClick={() => handleNavigation(item.path)}
-              sx={{
-                color: location.pathname === item.path ? '#fbbf24' : 'rgba(255, 255, 255, 0.7)',
-                fontWeight: location.pathname === item.path ? 600 : 400,
-                '&:hover': {
-                  color: 'white',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
-              {item.label}
-            </Button>
-          ))}
         </Box>
 
         <Button

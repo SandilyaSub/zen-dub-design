@@ -27,6 +27,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
 import ProgressSteps from '../components/ProgressSteps';
+import AdvancedFeatures from '../components/AdvancedFeatures';
 
 const SUPPORTED_LANGUAGES = [
   'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Gujarati', 'Marathi', 
@@ -270,7 +271,7 @@ const HomePage = () => {
               </FormControl>
 
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                The system supports automatic language detection, but you can also specify your target language for better accuracy.
+                Please specify the language in which you desire the output audio.
               </Typography>
 
               <Button
@@ -285,35 +286,9 @@ const HomePage = () => {
             </CardContent>
           </Card>
 
-          <Card sx={{ mt: 2 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                <CheckCircle sx={{ mr: 1, color: '#10b981', fontSize: 20 }} />
-                Advanced Features
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Powered by state-of-the-art AI models for professional-grade results:
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
-                  Speaker identification & separation
-                </Typography>
-                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
-                  Smart audio segmentation
-                </Typography>
-                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
-                  Multi-format audio support
-                </Typography>
-                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#6366f1', mr: 2 }} />
-                  Video-to-audio extraction
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
+          <Box sx={{ mt: 2 }}>
+            <AdvancedFeatures />
+          </Box>
         </Box>
       </Box>
     </Container>
