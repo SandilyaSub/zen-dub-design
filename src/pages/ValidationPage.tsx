@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { 
   Container, 
@@ -11,7 +12,6 @@ import {
   Chip,
   Divider
 } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2';
 import { 
   CheckCircle,
   Assessment,
@@ -198,91 +198,83 @@ const ValidationPage = () => {
                   </Typography>
                 </Box>
               ) : (
-                <Grid2 container spacing={3}>
-                  <Grid2 xs={12} sm={6}>
-                    <Paper sx={{ p: 3, textAlign: 'center' }}>
-                      <Translate sx={{ fontSize: 32, color: getScoreColor(metrics.semanticSimilarity), mb: 1 }} />
-                      <Typography variant="h5" sx={{ color: getScoreColor(metrics.semanticSimilarity), mb: 1 }}>
-                        {metrics.semanticSimilarity}%
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Semantic Similarity
-                      </Typography>
-                      <Chip 
-                        label={getScoreLabel(metrics.semanticSimilarity)}
-                        size="small"
-                        sx={{ 
-                          mt: 1,
-                          backgroundColor: `${getScoreColor(metrics.semanticSimilarity)}20`,
-                          color: getScoreColor(metrics.semanticSimilarity)
-                        }}
-                      />
-                    </Paper>
-                  </Grid2>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3 }}>
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Translate sx={{ fontSize: 32, color: getScoreColor(metrics.semanticSimilarity), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.semanticSimilarity), mb: 1 }}>
+                      {metrics.semanticSimilarity}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Semantic Similarity
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.semanticSimilarity)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.semanticSimilarity)}20`,
+                        color: getScoreColor(metrics.semanticSimilarity)
+                      }}
+                    />
+                  </Paper>
 
-                  <Grid2 xs={12} sm={6}>
-                    <Paper sx={{ p: 3, textAlign: 'center' }}>
-                      <RecordVoiceOver sx={{ fontSize: 32, color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }} />
-                      <Typography variant="h5" sx={{ color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }}>
-                        {metrics.transcriptionAccuracy}%
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Transcription Accuracy
-                      </Typography>
-                      <Chip 
-                        label={getScoreLabel(metrics.transcriptionAccuracy)}
-                        size="small"
-                        sx={{ 
-                          mt: 1,
-                          backgroundColor: `${getScoreColor(metrics.transcriptionAccuracy)}20`,
-                          color: getScoreColor(metrics.transcriptionAccuracy)
-                        }}
-                      />
-                    </Paper>
-                  </Grid2>
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <RecordVoiceOver sx={{ fontSize: 32, color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }}>
+                      {metrics.transcriptionAccuracy}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Transcription Accuracy
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.transcriptionAccuracy)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.transcriptionAccuracy)}20`,
+                        color: getScoreColor(metrics.transcriptionAccuracy)
+                      }}
+                    />
+                  </Paper>
 
-                  <Grid2 xs={12} sm={6}>
-                    <Paper sx={{ p: 3, textAlign: 'center' }}>
-                      <Assessment sx={{ fontSize: 32, color: getScoreColor(metrics.translationQuality), mb: 1 }} />
-                      <Typography variant="h5" sx={{ color: getScoreColor(metrics.translationQuality), mb: 1 }}>
-                        {metrics.translationQuality}%
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Translation Quality
-                      </Typography>
-                      <Chip 
-                        label={getScoreLabel(metrics.translationQuality)}
-                        size="small"
-                        sx={{ 
-                          mt: 1,
-                          backgroundColor: `${getScoreColor(metrics.translationQuality)}20`,
-                          color: getScoreColor(metrics.translationQuality)
-                        }}
-                      />
-                    </Paper>
-                  </Grid2>
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Assessment sx={{ fontSize: 32, color: getScoreColor(metrics.translationQuality), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.translationQuality), mb: 1 }}>
+                      {metrics.translationQuality}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Translation Quality
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.translationQuality)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.translationQuality)}20`,
+                        color: getScoreColor(metrics.translationQuality)
+                      }}
+                    />
+                  </Paper>
 
-                  <Grid2 xs={12} sm={6}>
-                    <Paper sx={{ p: 3, textAlign: 'center' }}>
-                      <VolumeUp sx={{ fontSize: 32, color: getScoreColor(metrics.audioQuality), mb: 1 }} />
-                      <Typography variant="h5" sx={{ color: getScoreColor(metrics.audioQuality), mb: 1 }}>
-                        {metrics.audioQuality}%
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Audio Quality
-                      </Typography>
-                      <Chip 
-                        label={getScoreLabel(metrics.audioQuality)}
-                        size="small"
-                        sx={{ 
-                          mt: 1,
-                          backgroundColor: `${getScoreColor(metrics.audioQuality)}20`,
-                          color: getScoreColor(metrics.audioQuality)
-                        }}
-                      />
-                    </Paper>
-                  </Grid2>
-                </Grid2>
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <VolumeUp sx={{ fontSize: 32, color: getScoreColor(metrics.audioQuality), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.audioQuality), mb: 1 }}>
+                      {metrics.audioQuality}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Audio Quality
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.audioQuality)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.audioQuality)}20`,
+                        color: getScoreColor(metrics.audioQuality)
+                      }}
+                    />
+                  </Paper>
+                </Box>
               )}
             </CardContent>
           </Card>
