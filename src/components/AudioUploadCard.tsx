@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -13,11 +12,8 @@ import {
   CloudUpload, 
   AudioFile,
   CheckCircle,
-  Link as LinkIcon,
-  PlayArrow,
-  Pause
+  Link as LinkIcon
 } from '@mui/icons-material';
-import { useSession } from '../context/SessionContext';
 
 interface AudioUploadCardProps {
   onUpload: (fileName: string) => void;
@@ -26,60 +22,25 @@ interface AudioUploadCardProps {
 }
 
 const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, isCompleted }) => {
-  const { setAudioData } = useSession();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   const handleFileUpload = () => {
     setIsUploading(true);
     setUploadProgress(0);
-    
-    // Create a mock audio file URL for demonstration
-    const mockAudioUrl = 'https://www.soundjay.com/misc/sounds-of-nature-3.wav';
     
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setIsUploading(false);
-          setAudioUrl(mockAudioUrl);
-          
-          // Update session context with audio data
-          setAudioData({
-            url: mockAudioUrl,
-            fileName: 'audio_sample.mp3',
-            duration: 30 // mock duration
-          });
-          
           onUpload('audio_sample.mp3');
           return 100;
         }
         return prev + 20;
       });
     }, 300);
-  };
-
-  const toggleAudioPlayback = () => {
-    if (!audioUrl) return;
-
-    if (isPlaying) {
-      audioElement?.pause();
-      setIsPlaying(false);
-    } else {
-      if (!audioElement) {
-        const audio = new Audio(audioUrl);
-        audio.onended = () => setIsPlaying(false);
-        setAudioElement(audio);
-        audio.play();
-      } else {
-        audioElement.play();
-      }
-      setIsPlaying(true);
-    }
   };
 
   const stepNumber = 1;
@@ -230,21 +191,8 @@ const AudioUploadCard: React.FC<AudioUploadCardProps> = ({ onUpload, isActive, i
               label="audio_sample.mp3" 
               variant="outlined" 
               size="small"
-              sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981', mb: 2 }}
+              sx={{ backgroundColor: '#ecfdf5', borderColor: '#10b981' }}
             />
-            
-            {audioUrl && (
-              <Box sx={{ mt: 2 }}>
-                <Button
-                  variant="outlined"
-                  onClick={toggleAudioPlayback}
-                  startIcon={isPlaying ? <Pause /> : <PlayArrow />}
-                  sx={{ mb: 1 }}
-                >
-                  {isPlaying ? 'Pause' : 'Play'} Audio
-                </Button>
-              </Box>
-            )}
           </Box>
         )}
       </CardContent>

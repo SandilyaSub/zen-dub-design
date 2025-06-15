@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Container, 
@@ -133,160 +134,158 @@ const SynthesisPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}> {/* Account for fixed header height */}
-      <Container maxWidth="lg" sx={{ py: 0 }}> {/* Remove top padding since ProgressSteps has its own */}
-        <ProgressSteps />
-        
-        <Box sx={{ textAlign: 'center', mb: 4, px: 2 }}>
-          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#1f2937' }}>
-            Speech Synthesis
-          </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-            Configure voice settings for each speaker and generate synthesized speech
-          </Typography>
-        </Box>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <ProgressSteps />
+      
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
+          Speech Synthesis
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Configure voice settings for each speaker and generate synthesized speech
+        </Typography>
+      </Box>
 
-        {/* Speaker Mapping Configuration */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Person />
-              Speaker Voice Mapping ({uniqueSpeakers.length} speakers detected)
+      {/* Speaker Mapping Configuration */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Person />
+            Speaker Voice Mapping ({uniqueSpeakers.length} speakers detected)
+          </Typography>
+          
+          <TableContainer component={Paper} variant="outlined">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Original Speaker</TableCell>
+                  <TableCell>Speaker Name</TableCell>
+                  <TableCell>Gender</TableCell>
+                  <TableCell>Voice</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {uniqueSpeakers.map((speaker) => (
+                  <TableRow key={speaker}>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        {speaker}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        size="small"
+                        value={speakerMappings[speaker]?.name || speaker}
+                        onChange={(e) => handleSpeakerMappingChange(speaker, 'name', e.target.value)}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <FormControl size="small" sx={{ minWidth: 100 }}>
+                        <Select
+                          value={speakerMappings[speaker]?.gender || 'Female'}
+                          onChange={(e) => handleSpeakerMappingChange(speaker, 'gender', e.target.value)}
+                        >
+                          <MenuItem value="Male">Male</MenuItem>
+                          <MenuItem value="Female">Female</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell>
+                      <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                          value={speakerMappings[speaker]?.voiceId || 'meera'}
+                          onChange={(e) => handleSpeakerMappingChange(speaker, 'voiceId', e.target.value)}
+                        >
+                          {VOICE_OPTIONS
+                            .filter(voice => voice.gender === speakerMappings[speaker]?.gender)
+                            .map((voice) => (
+                              <MenuItem key={voice.id} value={voice.id}>
+                                {voice.name}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+
+      {/* Generate Speech Section */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
+              Generate Synthesized Speech
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Click below to generate speech with the configured voice mappings
             </Typography>
             
-            <TableContainer component={Paper} variant="outlined">
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Original Speaker</TableCell>
-                    <TableCell>Speaker Name</TableCell>
-                    <TableCell>Gender</TableCell>
-                    <TableCell>Voice</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {uniqueSpeakers.map((speaker) => (
-                    <TableRow key={speaker}>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                          {speaker}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          value={speakerMappings[speaker]?.name || speaker}
-                          onChange={(e) => handleSpeakerMappingChange(speaker, 'name', e.target.value)}
-                          variant="outlined"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <FormControl size="small" sx={{ minWidth: 100 }}>
-                          <Select
-                            value={speakerMappings[speaker]?.gender || 'Female'}
-                            onChange={(e) => handleSpeakerMappingChange(speaker, 'gender', e.target.value)}
-                          >
-                            <MenuItem value="Male">Male</MenuItem>
-                            <MenuItem value="Female">Female</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </TableCell>
-                      <TableCell>
-                        <FormControl size="small" sx={{ minWidth: 120 }}>
-                          <Select
-                            value={speakerMappings[speaker]?.voiceId || 'meera'}
-                            onChange={(e) => handleSpeakerMappingChange(speaker, 'voiceId', e.target.value)}
-                          >
-                            {VOICE_OPTIONS
-                              .filter(voice => voice.gender === speakerMappings[speaker]?.gender)
-                              .map((voice) => (
-                                <MenuItem key={voice.id} value={voice.id}>
-                                  {voice.name}
-                                </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
+            {isSynthesizing && (
+              <Box sx={{ mb: 3 }}>
+                <LinearProgress />
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  Synthesizing speech...
+                </Typography>
+              </Box>
+            )}
+            
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleSynthesize}
+              disabled={isSynthesizing}
+              startIcon={<VolumeUp />}
+              sx={{ minWidth: 200 }}
+            >
+              {isSynthesizing ? 'Generating...' : 'Generate Speech'}
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
-        {/* Generate Speech Section */}
-        <Card sx={{ mb: 3 }}>
+      {/* Audio Player Section */}
+      {synthesisComplete && audioUrl && (
+        <Card>
           <CardContent sx={{ p: 3 }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom>
-                Generate Synthesized Speech
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Click below to generate speech with the configured voice mappings
-              </Typography>
-              
-              {isSynthesizing && (
-                <Box sx={{ mb: 3 }}>
-                  <LinearProgress />
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    Synthesizing speech...
-                  </Typography>
-                </Box>
-              )}
-              
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <PlayArrow />
+              Synthesized Audio
+            </Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <audio controls style={{ width: '100%' }}>
+                <source src={audioUrl} type="audio/wav" />
+                Your browser does not support the audio element.
+              </audio>
+            </Box>
+            
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button
+                variant="outlined"
+                onClick={handleDownload}
+                startIcon={<Download />}
+              >
+                Download Audio
+              </Button>
               <Button
                 variant="contained"
+                onClick={handleContinueToValidation}
+                startIcon={<ArrowForward />}
                 size="large"
-                onClick={handleSynthesize}
-                disabled={isSynthesizing}
-                startIcon={<VolumeUp />}
-                sx={{ minWidth: 200 }}
               >
-                {isSynthesizing ? 'Generating...' : 'Generate Speech'}
+                Continue to Validation
               </Button>
             </Box>
           </CardContent>
         </Card>
-
-        {/* Audio Player Section */}
-        {synthesisComplete && audioUrl && (
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PlayArrow />
-                Synthesized Audio
-              </Typography>
-              
-              <Box sx={{ mb: 3 }}>
-                <audio controls style={{ width: '100%' }}>
-                  <source src={audioUrl} type="audio/wav" />
-                  Your browser does not support the audio element.
-                </audio>
-              </Box>
-              
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-                <Button
-                  variant="outlined"
-                  onClick={handleDownload}
-                  startIcon={<Download />}
-                >
-                  Download Audio
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleContinueToValidation}
-                  startIcon={<ArrowForward />}
-                  size="large"
-                >
-                  Continue to Validation
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        )}
-      </Container>
-    </Box>
+      )}
+    </Container>
   );
 };
 

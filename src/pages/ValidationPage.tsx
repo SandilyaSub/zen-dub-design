@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Container, 
   Box, 
@@ -7,280 +7,280 @@ import {
   CardContent, 
   Typography, 
   Button,
+  LinearProgress,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Chip,
-  Rating,
-  TextField,
-  LinearProgress
+  Divider
 } from '@mui/material';
 import { 
-  CheckCircle, 
+  CheckCircle,
+  Assessment,
+  VolumeUp,
+  Translate,
+  RecordVoiceOver,
   Download,
-  Refresh,
-  Star
+  Refresh
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
 import ProgressSteps from '../components/ProgressSteps';
 
 const ValidationPage = () => {
-  const { translationData, synthesisData } = useSession();
-  const [overallRating, setOverallRating] = useState<number | null>(4);
-  const [feedback, setFeedback] = useState('');
+  const navigate = useNavigate();
+  const { synthesisData, setValidationData, setCurrentStep } = useSession();
+  const [isValidating, setIsValidating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [validationComplete, setValidationComplete] = useState(false);
 
-  // Mock quality metrics
-  const qualityMetrics = [
-    { metric: 'BERT Score', value: 0.89, description: 'Semantic similarity' },
-    { metric: 'BLEU Score', value: 0.76, description: 'Translation accuracy' },
-    { metric: 'Word Preservation', value: 0.82, description: 'Key terms maintained' },
-    { metric: 'Composite Score', value: 0.83, description: 'Overall quality' }
-  ];
+  const [metrics, setMetrics] = useState({
+    semanticSimilarity: 0,
+    transcriptionAccuracy: 0,
+    translationQuality: 0,
+    audioQuality: 0,
+    overallScore: 0
+  });
+
+  useEffect(() => {
+    if (!synthesisData) {
+      navigate('/synthesis');
+      return;
+    }
+    
+    // Start validation automatically
+    handleValidation();
+  }, []);
+
+  const handleValidation = () => {
+    setIsValidating(true);
+    setProgress(0);
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsValidating(false);
+          setValidationComplete(true);
+          
+          // Mock validation results
+          const mockMetrics = {
+            semanticSimilarity: 89,
+            transcriptionAccuracy: 94,
+            translationQuality: 87,
+            audioQuality: 92,
+            overallScore: 90
+          };
+          
+          setMetrics(mockMetrics);
+          setValidationData(mockMetrics);
+          
+          return 100;
+        }
+        return prev + 8;
+      });
+    }, 250);
+  };
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.8) return '#10b981'; // Green
-    if (score >= 0.6) return '#f59e0b'; // Yellow
-    return '#ef4444'; // Red
+    if (score >= 90) return '#10b981';
+    if (score >= 75) return '#f59e0b';
+    return '#ef4444';
   };
 
   const getScoreLabel = (score: number) => {
-    if (score >= 0.8) return 'Excellent';
-    if (score >= 0.6) return 'Good';
+    if (score >= 90) return 'Excellent';
+    if (score >= 75) return 'Good';
     return 'Needs Improvement';
   };
 
-  if (!translationData || !synthesisData) {
-    return (
-      <Container maxWidth="md" sx={{ py: 3 }}>
-        <Typography variant="h6" color="text.secondary">
-          Please complete the previous steps to access validation.
-        </Typography>
-      </Container>
-    );
-  }
+  const handleStartOver = () => {
+    setCurrentStep('input');
+    navigate('/');
+  };
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}>
-      <Container maxWidth="lg" sx={{ py: 0 }}>
-        <ProgressSteps />
-        
-        <Box sx={{ textAlign: 'center', mb: 4, px: 2 }}>
-          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#1f2937' }}>
-            Validation & Quality Check
-          </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-            Review and validate the complete speech-to-speech translation
-          </Typography>
-        </Box>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ProgressSteps />
+      
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
+          Quality Validation
+        </Typography>
+        <Typography variant="h6" color="text.secondary">
+          Comprehensive analysis of translation and synthesis quality
+        </Typography>
+      </Box>
 
-        <Box sx={{ display: 'flex', gap: 4, mb: 4 }}>
-          {/* Quality Metrics */}
-          <Box sx={{ flex: 1 }}>
-            <Card sx={{ mb: 3 }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-                  Quality Metrics
-                </Typography>
-                
-                <TableContainer component={Paper} variant="outlined">
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Metric</TableCell>
-                        <TableCell align="center">Score</TableCell>
-                        <TableCell align="center">Quality</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {qualityMetrics.map((metric) => (
-                        <TableRow key={metric.metric}>
-                          <TableCell>
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                {metric.metric}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {metric.description}
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                              {metric.value.toFixed(2)}
-                            </Typography>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Chip
-                              label={getScoreLabel(metric.value)}
-                              sx={{
-                                backgroundColor: getScoreColor(metric.value),
-                                color: 'white',
-                                fontWeight: 500
-                              }}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
-
-            {/* User Feedback */}
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-                  Your Feedback
-                </Typography>
-                
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                    Overall Rating
+      <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
+        <Box sx={{ flex: 1 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                Validation Status
+              </Typography>
+              
+              {isValidating ? (
+                <Box>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Running quality checks: {progress}%
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Rating
-                      value={overallRating}
-                      onChange={(_, newValue) => setOverallRating(newValue)}
-                      size="large"
-                      icon={<Star sx={{ color: '#fbbf24' }} />}
-                      emptyIcon={<Star sx={{ color: '#d1d5db' }} />}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      {overallRating ? `${overallRating}/5 stars` : 'No rating'}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <TextField
-                  fullWidth
-                  multiline
-                  minRows={3}
-                  placeholder="Share your feedback about the translation quality, voice synthesis, or overall experience..."
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  variant="outlined"
-                  sx={{ mb: 3 }}
-                />
-
-                <Button variant="outlined" fullWidth>
-                  Submit Feedback
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Final Results */}
-          <Box sx={{ flex: 2 }}>
-            <Card sx={{ mb: 3 }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-                  Final Audio Output
-                </Typography>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                  <CheckCircle sx={{ color: '#10b981', fontSize: 28 }} />
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      Processing Complete
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Speech-to-speech translation successful
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Paper sx={{ p: 2, mb: 3, backgroundColor: '#f9fafb' }}>
-                  <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>
-                    Translation Summary:
-                  </Typography>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={progress}
+                    sx={{ height: 8, borderRadius: 4, mb: 2 }}
+                  />
                   <Typography variant="body2" color="text.secondary">
-                    • Source: {translationData.sourceLanguage}<br/>
-                    • Target: {translationData.targetLanguage}<br/>
-                    • Segments: {translationData.translatedSegments.length}<br/>
-                    • Quality Score: {qualityMetrics[3].value.toFixed(2)}/1.0
+                    Analyzing semantic similarity, translation accuracy, and audio quality...
                   </Typography>
-                </Paper>
+                </Box>
+              ) : (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <CheckCircle sx={{ color: '#10b981', mr: 1 }} />
+                    <Typography variant="body1">
+                      Validation Complete
+                    </Typography>
+                  </Box>
+                  
+                  <Paper sx={{ p: 3, mb: 3, backgroundColor: '#f0fdf4', border: '1px solid #10b981' }}>
+                    <Typography variant="h4" sx={{ color: '#059669', textAlign: 'center', mb: 1 }}>
+                      {metrics.overallScore}%
+                    </Typography>
+                    <Typography variant="body1" sx={{ textAlign: 'center', color: '#059669' }}>
+                      Overall Quality Score
+                    </Typography>
+                    <Typography variant="body2" sx={{ textAlign: 'center', color: '#065f46', mt: 1 }}>
+                      {getScoreLabel(metrics.overallScore)}
+                    </Typography>
+                  </Paper>
+                </Box>
+              )}
 
-                <Box sx={{ mb: 3 }}>
-                  <audio controls style={{ width: '100%' }}>
-                    {synthesisData.audioUrl && (
-                      <source src={synthesisData.audioUrl} type="audio/wav" />
-                    )}
-                    Your browser does not support the audio element.
-                  </audio>
-                </Box>
-                
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<Download />}
-                    sx={{ flex: 1 }}
-                  >
-                    Download Audio
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<Refresh />}
-                    sx={{ flex: 1 }}
-                  >
-                    Process Again
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
+              <Divider sx={{ my: 3 }} />
+              
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Actions
+              </Typography>
+              
+              <Button
+                variant="outlined"
+                startIcon={<Download />}
+                fullWidth
+                sx={{ mb: 2 }}
+                disabled={!validationComplete}
+              >
+                Download Final Audio
+              </Button>
 
-            {/* Processing History */}
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-                  Processing Steps
-                </Typography>
-                
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {[
-                    { step: 'Audio Input', status: 'Completed', time: '2.3s' },
-                    { step: 'Speech Recognition', status: 'Completed', time: '15.7s' },
-                    { step: 'Translation', status: 'Completed', time: '3.1s' },
-                    { step: 'Speech Synthesis', status: 'Completed', time: '8.9s' },
-                    { step: 'Validation', status: 'In Progress', time: '-' }
-                  ].map((item, index) => (
-                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        {item.status === 'Completed' ? (
-                          <CheckCircle sx={{ color: '#10b981', fontSize: 20 }}/>
-                        ) : (
-                          <Box sx={{ width: 20, height: 20 }}>
-                            <LinearProgress 
-                              variant="indeterminate" 
-                              sx={{ 
-                                height: 4, 
-                                borderRadius: 2,
-                                mt: 1
-                              }} 
-                            />
-                          </Box>
-                        )}
-                        <Typography variant="body2">
-                          {item.step}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {item.time}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
+              <Button
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={handleStartOver}
+                fullWidth
+              >
+                Start New Translation
+              </Button>
+            </CardContent>
+          </Card>
         </Box>
-      </Container>
-    </Box>
+
+        <Box sx={{ flex: 2 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                Quality Metrics
+              </Typography>
+
+              {isValidating ? (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Assessment sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    Analyzing translation and synthesis quality...
+                  </Typography>
+                </Box>
+              ) : (
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3 }}>
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Translate sx={{ fontSize: 32, color: getScoreColor(metrics.semanticSimilarity), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.semanticSimilarity), mb: 1 }}>
+                      {metrics.semanticSimilarity}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Semantic Similarity
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.semanticSimilarity)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.semanticSimilarity)}20`,
+                        color: getScoreColor(metrics.semanticSimilarity)
+                      }}
+                    />
+                  </Paper>
+
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <RecordVoiceOver sx={{ fontSize: 32, color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.transcriptionAccuracy), mb: 1 }}>
+                      {metrics.transcriptionAccuracy}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Transcription Accuracy
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.transcriptionAccuracy)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.transcriptionAccuracy)}20`,
+                        color: getScoreColor(metrics.transcriptionAccuracy)
+                      }}
+                    />
+                  </Paper>
+
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Assessment sx={{ fontSize: 32, color: getScoreColor(metrics.translationQuality), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.translationQuality), mb: 1 }}>
+                      {metrics.translationQuality}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Translation Quality
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.translationQuality)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.translationQuality)}20`,
+                        color: getScoreColor(metrics.translationQuality)
+                      }}
+                    />
+                  </Paper>
+
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <VolumeUp sx={{ fontSize: 32, color: getScoreColor(metrics.audioQuality), mb: 1 }} />
+                    <Typography variant="h5" sx={{ color: getScoreColor(metrics.audioQuality), mb: 1 }}>
+                      {metrics.audioQuality}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Audio Quality
+                    </Typography>
+                    <Chip 
+                      label={getScoreLabel(metrics.audioQuality)}
+                      size="small"
+                      sx={{ 
+                        mt: 1,
+                        backgroundColor: `${getScoreColor(metrics.audioQuality)}20`,
+                        color: getScoreColor(metrics.audioQuality)
+                      }}
+                    />
+                  </Paper>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
