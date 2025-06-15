@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -127,57 +126,19 @@ const TranslationPage = () => {
           {isTranslating && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>
-                Translation
+                Translation in Progress
               </Typography>
-              <TextField
-                fullWidth
-                multiline
-                minRows={4}
-                placeholder="Translation will appear here..."
-                disabled
-                sx={{ mb: 3 }}
-              />
               <Typography variant="body2" sx={{ mb: 2 }}>
                 Translating with Sarvam AI...
               </Typography>
               <LinearProgress />
-              
-              <Box sx={{ mt: 4 }}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Translation Editor
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  Edit individual translation segments below
-                </Typography>
-                
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                  <Button variant="outlined" size="small" disabled>
-                    Save Edits
-                  </Button>
-                  <Button variant="outlined" size="small" disabled>
-                    Save & Continue
-                  </Button>
-                </Box>
-              </Box>
             </Box>
           )}
 
           {translatedSegments.length > 0 && (
             <Box>
               <Typography variant="h6" sx={{ mb: 2 }}>
-                Translation
-              </Typography>
-              <TextField
-                fullWidth
-                multiline
-                minRows={4}
-                value={translatedSegments.map(seg => seg.translatedText).join(' ')}
-                disabled
-                sx={{ mb: 4 }}
-              />
-              
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Translation Editor
+                Translation Results
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 Edit individual translation segments below
@@ -204,7 +165,10 @@ const TranslationPage = () => {
                     sx={{ 
                       p: 3, 
                       border: '1px solid #e5e7eb',
-                      position: 'relative'
+                      position: 'relative',
+                      '&:hover': {
+                        boxShadow: 2
+                      }
                     }}
                   >
                     {/* Segment number badge */}
@@ -223,10 +187,10 @@ const TranslationPage = () => {
                         boxShadow: 1
                       }}
                     >
-                      #{index + 1} {formatTime(segment.start)}-{formatTime(segment.end)}
+                      #{index + 1}
                     </Box>
 
-                    {/* Speaker badge */}
+                    {/* Timing badge */}
                     <Box
                       sx={{
                         position: 'absolute',
@@ -242,28 +206,37 @@ const TranslationPage = () => {
                         boxShadow: 1
                       }}
                     >
-                      {segment.speaker}
+                      {formatTime(segment.start)}-{formatTime(segment.end)}
                     </Box>
                     
                     <Box sx={{ mt: 2 }}>
+                      {/* Speaker info */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          {segment.speaker}
+                        </Typography>
+                      </Box>
+
+                      {/* Original text (read-only) */}
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
-                        Original:
+                        Original ({sourceLanguage}):
                       </Typography>
-                      <Typography 
-                        variant="body1" 
+                      <Paper 
                         sx={{ 
                           mb: 3,
                           p: 2,
                           backgroundColor: '#f9fafb',
-                          borderRadius: 1,
                           border: '1px solid #e5e7eb'
                         }}
                       >
-                        {segment.originalText}
-                      </Typography>
+                        <Typography variant="body1">
+                          {segment.originalText}
+                        </Typography>
+                      </Paper>
                       
+                      {/* Translation text (editable) */}
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
-                        Translation:
+                        Translation ({targetLanguage}):
                       </Typography>
                       <TextField
                         fullWidth
