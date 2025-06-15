@@ -12,58 +12,95 @@ import {
   Select,
   MenuItem,
   Paper,
-  Chip,
-  Slider,
-  LinearProgress
+  TextField,
+  LinearProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import { 
   VolumeUp,
   PlayArrow,
-  Download
+  Download,
+  Person
 } from '@mui/icons-material';
 import { useSession } from '../context/SessionContext';
+import ProgressSteps from '../components/ProgressSteps';
 
-const TTS_PROVIDERS = [
-  { id: 'sarvam', name: 'Sarvam AI', description: 'Natural Indian voices' },
-  { id: 'openvoice', name: 'OpenVoice', description: 'Voice cloning technology' }
+const VOICE_OPTIONS = [
+  { id: 'meera', name: 'Meera', gender: 'Female' },
+  { id: 'arvind', name: 'Arvind', gender: 'Male' },
+  { id: 'anushka', name: 'Anushka', gender: 'Female' },
+  { id: 'karun', name: 'Karun', gender: 'Male' },
+  { id: 'priya', name: 'Priya', gender: 'Female' },
+  { id: 'rajesh', name: 'Rajesh', gender: 'Male' }
 ];
-
-const VOICE_OPTIONS = {
-  sarvam: [
-    { id: 'meera', name: 'Meera', gender: 'Female' },
-    { id: 'arvind', name: 'Arvind', gender: 'Male' },
-    { id: 'anushka', name: 'Anushka', gender: 'Female' },
-    { id: 'karun', name: 'Karun', gender: 'Male' }
-  ],
-  openvoice: [
-    { id: 'default', name: 'Default Voice', gender: 'Neutral' },
-    { id: 'cloned', name: 'Cloned Voice', gender: 'Custom' }
-  ]
-};
 
 const SynthesisPage = () => {
   const { translationData, setSynthesisData } = useSession();
-  const [selectedProvider, setSelectedProvider] = useState<'sarvam' | 'openvoice'>('sarvam');
-  const [selectedVoice, setSelectedVoice] = useState('meera');
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthesisComplete, setSynthesisComplete] = useState(false);
-  const [voiceOptions, setVoiceOptions] = useState({
-    pitch: 0,
-    pace: 1.0,
-    loudness: 1.0
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
+  // Extract unique speakers from translation data
+  const uniqueSpeakers = translationData ? 
+    Array.from(new Set(translationData.translatedSegments.map(segment => segment.speaker))) : [];
+
+  // Speaker mapping state
+  const [speakerMappings, setSpeakerMappings] = useState<Record<string, {
+    name: string;
+    gender: 'Male' | 'Female';
+    voiceId: string;
+  }>>(() => {
+    // Initialize with default mappings
+    const mappings: Record<string, { name: string; gender: 'Male' | 'Female'; voiceId: string; }> = {};
+    uniqueSpeakers.forEach((speaker, index) => {
+      const defaultVoice = VOICE_OPTIONS[index % VOICE_OPTIONS.length];
+      mappings[speaker] = {
+        name: speaker,
+        gender: defaultVoice.gender as 'Male' | 'Female',
+        voiceId: defaultVoice.id
+      };
+    });
+    return mappings;
   });
+
+  const handleSpeakerMappingChange = (
+    speaker: string, 
+    field: 'name' | 'gender' | 'voiceId', 
+    value: string
+  ) => {
+    setSpeakerMappings(prev => ({
+      ...prev,
+      [speaker]: {
+        ...prev[speaker],
+        [field]: value
+      }
+    }));
+  };
 
   const handleSynthesize = () => {
     if (!translationData) return;
     
     setIsSynthesizing(true);
     
+    // Simulate synthesis process
     setTimeout(() => {
+      const mockAudioUrl = 'data:audio/wav;base64,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';
+      setAudioUrl(mockAudioUrl);
+      
       setSynthesisData({
-        provider: selectedProvider,
-        voice: selectedVoice,
-        audioUrl: 'mock-audio-url.mp3',
-        options: voiceOptions
+        provider: 'sarvam',
+        voice: 'multi-speaker',
+        audioUrl: mockAudioUrl,
+        options: {
+          pitch: 0,
+          pace: 1.0,
+          loudness: 1.0
+        }
       });
       
       setIsSynthesizing(false);
@@ -71,21 +108,16 @@ const SynthesisPage = () => {
     }, 4000);
   };
 
-  const handleProviderChange = (provider: 'sarvam' | 'openvoice') => {
-    setSelectedProvider(provider);
-    setSelectedVoice(VOICE_OPTIONS[provider][0].id);
-  };
-
-  const availableVoices = VOICE_OPTIONS[selectedProvider] || [];
-
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ProgressSteps />
+      
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
           Speech Synthesis
         </Typography>
         <Typography variant="h6" color="text.secondary">
-          Generate natural speech with advanced TTS technology
+          Generate natural speech with speaker mapping
         </Typography>
       </Box>
 
@@ -94,118 +126,130 @@ const SynthesisPage = () => {
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>
-                TTS Provider
+                Speaker Voice Mapping
               </Typography>
               
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel>Provider</InputLabel>
-                <Select
-                  value={selectedProvider}
-                  label="Provider"
-                  onChange={(e) => handleProviderChange(e.target.value as 'sarvam' | 'openvoice')}
-                >
-                  {TTS_PROVIDERS.map((provider) => (
-                    <MenuItem key={provider.id} value={provider.id}>
-                      {provider.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel>Voice</InputLabel>
-                <Select
-                  value={selectedVoice}
-                  label="Voice"
-                  onChange={(e) => setSelectedVoice(e.target.value)}
-                >
-                  {availableVoices.map((voice) => (
-                    <MenuItem key={voice.id} value={voice.id}>
-                      {voice.name} ({voice.gender})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Voice Settings
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Configure voice settings for each detected speaker
               </Typography>
 
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Pitch: {voiceOptions.pitch}
-                </Typography>
-                <Slider
-                  value={voiceOptions.pitch}
-                  onChange={(_, value) => setVoiceOptions({...voiceOptions, pitch: value as number})}
-                  min={-0.75}
-                  max={0.75}
-                  step={0.25}
-                  marks
-                />
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Pace: {voiceOptions.pace}x
-                </Typography>
-                <Slider
-                  value={voiceOptions.pace}
-                  onChange={(_, value) => setVoiceOptions({...voiceOptions, pace: value as number})}
-                  min={0.5}
-                  max={2.0}
-                  step={0.1}
-                  marks
-                />
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Loudness: {voiceOptions.loudness}x
-                </Typography>
-                <Slider
-                  value={voiceOptions.loudness}
-                  onChange={(_, value) => setVoiceOptions({...voiceOptions, loudness: value as number})}
-                  min={0.3}
-                  max={3.0}
-                  step={0.1}
-                  marks
-                />
-              </Box>
+              <TableContainer component={Paper} variant="outlined">
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><strong>Speaker</strong></TableCell>
+                      <TableCell><strong>Name</strong></TableCell>
+                      <TableCell><strong>Gender</strong></TableCell>
+                      <TableCell><strong>Voice</strong></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {uniqueSpeakers.map((speaker) => (
+                      <TableRow key={speaker}>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Person fontSize="small" />
+                            {speaker}
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            size="small"
+                            value={speakerMappings[speaker]?.name || speaker}
+                            onChange={(e) => handleSpeakerMappingChange(speaker, 'name', e.target.value)}
+                            sx={{ minWidth: 120 }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <FormControl size="small" sx={{ minWidth: 100 }}>
+                            <Select
+                              value={speakerMappings[speaker]?.gender || 'Female'}
+                              onChange={(e) => handleSpeakerMappingChange(speaker, 'gender', e.target.value)}
+                            >
+                              <MenuItem value="Male">Male</MenuItem>
+                              <MenuItem value="Female">Female</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </TableCell>
+                        <TableCell>
+                          <FormControl size="small" sx={{ minWidth: 120 }}>
+                            <Select
+                              value={speakerMappings[speaker]?.voiceId || 'meera'}
+                              onChange={(e) => handleSpeakerMappingChange(speaker, 'voiceId', e.target.value)}
+                            >
+                              {VOICE_OPTIONS
+                                .filter(voice => voice.gender === (speakerMappings[speaker]?.gender || 'Female'))
+                                .map((voice) => (
+                                <MenuItem key={voice.id} value={voice.id}>
+                                  {voice.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
 
               <Button
                 variant="contained"
                 onClick={handleSynthesize}
-                disabled={isSynthesizing || !translationData}
+                disabled={isSynthesizing || !translationData || uniqueSpeakers.length === 0}
                 fullWidth
                 size="large"
                 startIcon={<VolumeUp />}
+                sx={{ mt: 3 }}
               >
-                {isSynthesizing ? 'Synthesizing...' : 'Generate Speech'}
+                {isSynthesizing ? 'Generating Speech...' : 'Generate Speech'}
               </Button>
             </CardContent>
           </Card>
 
-          {synthesisComplete && (
+          {synthesisComplete && audioUrl && (
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ mb: 2 }}>
-                  Generated Audio
+                  Synthesized Audio
                 </Typography>
+                
+                <Box sx={{ mb: 3 }}>
+                  <audio 
+                    controls 
+                    style={{ width: '100%' }}
+                    src={audioUrl}
+                  >
+                    Your browser does not support the audio element.
+                  </audio>
+                </Box>
                 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <Button
                     variant="outlined"
                     startIcon={<PlayArrow />}
                     fullWidth
+                    onClick={() => {
+                      const audio = document.querySelector('audio') as HTMLAudioElement;
+                      if (audio) {
+                        audio.currentTime = 0;
+                        audio.play();
+                      }
+                    }}
                   >
-                    Play Audio
+                    Replay Audio
                   </Button>
                   
                   <Button
                     variant="contained"
                     startIcon={<Download />}
                     fullWidth
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = audioUrl;
+                      link.download = 'synthesized_speech.wav';
+                      link.click();
+                    }}
                   >
                     Download Audio
                   </Button>
@@ -225,9 +269,12 @@ const SynthesisPage = () => {
               {isSynthesizing && (
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="body2" sx={{ mb: 1 }}>
-                    Generating speech with {TTS_PROVIDERS.find(p => p.id === selectedProvider)?.name}...
+                    Generating speech with Sarvam AI...
                   </Typography>
                   <LinearProgress />
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Processing {uniqueSpeakers.length} speaker(s)
+                  </Typography>
                 </Box>
               )}
 
@@ -236,12 +283,22 @@ const SynthesisPage = () => {
                   <Typography variant="h6" sx={{ mb: 2 }}>
                     Text to Synthesize
                   </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {translationData.translatedSegments.length} segments will be synthesized
+                  </Typography>
                   
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {translationData.translatedSegments.slice(0, 3).map((segment) => (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 400, overflowY: 'auto' }}>
+                    {translationData.translatedSegments.map((segment) => (
                       <Paper key={segment.id} sx={{ p: 2, backgroundColor: '#f8fafc' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Chip label={segment.speaker} size="small" />
+                          <Typography variant="body2" sx={{ fontWeight: 500, mr: 1 }}>
+                            {speakerMappings[segment.speaker]?.name || segment.speaker}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            ({speakerMappings[segment.speaker]?.gender || 'Female'} - {
+                              VOICE_OPTIONS.find(v => v.id === speakerMappings[segment.speaker]?.voiceId)?.name || 'Meera'
+                            })
+                          </Typography>
                         </Box>
                         <Typography variant="body1">
                           {segment.translatedText}
@@ -258,7 +315,7 @@ const SynthesisPage = () => {
                     Synthesis Complete!
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Your audio has been generated successfully. You can now play or download the synthesized speech.
+                    Multi-speaker audio has been generated successfully with voice mappings applied.
                   </Typography>
                 </Box>
               )}
@@ -271,4 +328,3 @@ const SynthesisPage = () => {
 };
 
 export default SynthesisPage;
-
