@@ -23,10 +23,8 @@ import AdvancedFeatures from '../components/AdvancedFeatures';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { setCurrentStep, setInputData } = useSession();
+  const { setCurrentStep, setInputData, audioData } = useSession();
   const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
-  const [audioFile] = useState<File | null>(null);
-  const [videoUrl] = useState('');
   const [uploadCompleted, setUploadCompleted] = useState(false);
 
   const handleUpload = (fileName: string) => {
@@ -37,8 +35,8 @@ const HomePage = () => {
   const handleContinue = () => {
     // Store input data in session
     setInputData({
-      audioFile,
-      videoUrl,
+      audioFile: audioData.file,
+      videoUrl: audioData.url || '',
       targetLanguage: selectedLanguage,
       uploadedAt: new Date().toISOString()
     });
@@ -46,6 +44,9 @@ const HomePage = () => {
     setCurrentStep('transcription');
     navigate('/transcription');
   };
+
+  // Check if we can proceed (either have uploaded file or audio data in session)
+  const canProceed = uploadCompleted || audioData.file || audioData.url;
 
   return (
     <Box sx={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#f8fafc' }}>
@@ -107,11 +108,18 @@ const HomePage = () => {
                 <Button
                   variant="contained"
                   onClick={handleContinue}
-                  disabled={!audioFile && !videoUrl}
+                  disabled={!canProceed}
                   fullWidth
                   size="large"
                   endIcon={<ArrowForward />}
-                  sx={{ mt: 3, py: 1.5 }}
+                  sx={{ 
+                    mt: 3, 
+                    py: 1.5,
+                    backgroundColor: canProceed ? '#6366f1' : undefined,
+                    '&:hover': {
+                      backgroundColor: canProceed ? '#4f46e5' : undefined
+                    }
+                  }}
                 >
                   Continue to Transcription
                 </Button>
