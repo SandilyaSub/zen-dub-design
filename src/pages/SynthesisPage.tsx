@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Container, 
@@ -127,7 +126,7 @@ const SynthesisPage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <ProgressSteps currentStep={3} />
+      <ProgressSteps />
       
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>

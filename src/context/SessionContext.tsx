@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AudioData {
@@ -39,14 +38,13 @@ interface TranslationData {
 }
 
 interface SynthesisData {
-  provider: 'sarvam' | 'openvoice';
-  voice: string;
   audioUrl: string | null;
-  options: {
-    pitch: number;
-    pace: number;
-    loudness: number;
-  };
+  speakerMappings: Record<string, {
+    name: string;
+    gender: 'Male' | 'Female';
+    voiceId: string;
+  }>;
+  synthesizedAt: string;
 }
 
 interface ValidationData {
