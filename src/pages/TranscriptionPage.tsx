@@ -122,194 +122,196 @@ const TranscriptionPage = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <ProgressSteps />
-      
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
-          Speech Recognition & Diarization
-        </Typography>
-        <Typography variant="h6" color="text.secondary">
-          Automatic transcription with speaker identification
-        </Typography>
-      </Box>
+    <Box sx={{ minHeight: 'calc(100vh - 100px)' }}> {/* Account for fixed header height */}
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <ProgressSteps />
+        
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
+            Speech Recognition & Diarization
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            Automatic transcription with speaker identification
+          </Typography>
+        </Box>
 
-      <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
-        <Box sx={{ flex: 1 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Processing Status
-              </Typography>
-              
-              {isProcessing ? (
-                <Box>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    Processing audio: {progress}%
-                  </Typography>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={progress}
-                    sx={{ height: 8, borderRadius: 4, mb: 2 }}
-                  />
-                  <Typography variant="body2" color="text.secondary">
-                    Performing VAD segmentation and speaker diarization...
-                  </Typography>
-                </Box>
-              ) : (
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <CheckCircle sx={{ color: '#10b981', mr: 1 }} />
-                    <Typography variant="body1">
-                      Processing Complete
+        <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
+          <Box sx={{ flex: 1 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Processing Status
+                </Typography>
+                
+                {isProcessing ? (
+                  <Box>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      Processing audio: {progress}%
+                    </Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={progress}
+                      sx={{ height: 8, borderRadius: 4, mb: 2 }}
+                    />
+                    <Typography variant="body2" color="text.secondary">
+                      Performing VAD segmentation and speaker diarization...
                     </Typography>
                   </Box>
-                  
-                  <Paper sx={{ p: 2, mb: 2 }}>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Detected Language:</strong> {detectedLanguage}
+                ) : (
+                  <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <CheckCircle sx={{ color: '#10b981', mr: 1 }} />
+                      <Typography variant="body1">
+                        Processing Complete
+                      </Typography>
+                    </Box>
+                    
+                    <Paper sx={{ p: 2, mb: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        <strong>Detected Language:</strong> {detectedLanguage}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Speakers Found:</strong> {new Set(segments.map(s => s.speaker)).size}
+                      </Typography>
+                    </Paper>
+                  </Box>
+                )}
+
+                <Divider sx={{ my: 2 }} />
+                
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Audio File
+                </Typography>
+                <Chip 
+                  label={audioData.fileName} 
+                  icon={<VolumeUp />}
+                  sx={{ mb: 2 }}
+                />
+                
+                <Button
+                  variant="outlined"
+                  startIcon={<PlayArrow />}
+                  fullWidth
+                  sx={{ mb: 2 }}
+                >
+                  Play Audio
+                </Button>
+
+                <Button
+                  variant="contained" 
+                  onClick={handleContinue}
+                  disabled={isProcessing || segments.length === 0}
+                  fullWidth
+                  size="large"
+                >
+                  Continue to Translation
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box sx={{ flex: 2 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 3 }}>
+                  Transcription Results
+                </Typography>
+
+                {isProcessing ? (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      Processing audio with advanced VAD and speaker diarization...
                     </Typography>
-                    <Typography variant="body2">
-                      <strong>Speakers Found:</strong> {new Set(segments.map(s => s.speaker)).size}
-                    </Typography>
-                  </Paper>
-                </Box>
-              )}
-
-              <Divider sx={{ my: 2 }} />
-              
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Audio File
-              </Typography>
-              <Chip 
-                label={audioData.fileName} 
-                icon={<VolumeUp />}
-                sx={{ mb: 2 }}
-              />
-              
-              <Button
-                variant="outlined"
-                startIcon={<PlayArrow />}
-                fullWidth
-                sx={{ mb: 2 }}
-              >
-                Play Audio
-              </Button>
-
-              <Button
-                variant="contained" 
-                onClick={handleContinue}
-                disabled={isProcessing || segments.length === 0}
-                fullWidth
-                size="large"
-              >
-                Continue to Translation
-              </Button>
-            </CardContent>
-          </Card>
-        </Box>
-
-        <Box sx={{ flex: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 3 }}>
-                Transcription Results
-              </Typography>
-
-              {isProcessing ? (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    Processing audio with advanced VAD and speaker diarization...
-                  </Typography>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {segments.map((segment, index) => (
-                    <Paper 
-                      key={segment.id} 
-                      elevation={1} 
-                      sx={{ 
-                        p: 3, 
-                        border: '1px solid #e5e7eb',
-                        position: 'relative',
-                        '&:hover': {
-                          boxShadow: 2
-                        }
-                      }}
-                    >
-                      {/* Segment number badge - positioned at top right */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: -8,
-                          right: 16,
-                          backgroundColor: '#1976d2',
-                          color: 'white',
-                          borderRadius: '12px',
-                          px: 2,
-                          py: 0.5,
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          boxShadow: 1
-                        }}
-                      >
-                        #{index + 1}
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <FormControl size="small" sx={{ minWidth: 120 }}>
-                            <InputLabel>Speaker</InputLabel>
-                            <Select
-                              value={segment.speaker}
-                              label="Speaker"
-                              onChange={(e) => handleSpeakerChange(segment.id, e.target.value)}
-                            >
-                              <MenuItem value="Speaker 1">Speaker 1</MenuItem>
-                              <MenuItem value="Speaker 2">Speaker 2</MenuItem>
-                              <MenuItem value="Speaker 3">Speaker 3</MenuItem>
-                            </Select>
-                          </FormControl>
-                          <Chip 
-                            icon={<Person />}
-                            label={`${formatTime(segment.start)} - ${formatTime(segment.end)}`}
-                            size="small"
-                            variant="outlined"
-                            sx={{ backgroundColor: '#f5f5f5' }}
-                          />
-                        </Box>
-                        <Button
-                          size="small"
-                          startIcon={<PlayArrow />}
-                          variant="outlined"
-                        >
-                          Play Segment
-                        </Button>
-                      </Box>
-                      
-                      <TextField
-                        fullWidth
-                        multiline
-                        minRows={2}
-                        value={segment.text}
-                        onChange={(e) => handleSegmentEdit(segment.id, e.target.value)}
-                        variant="outlined"
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    {segments.map((segment, index) => (
+                      <Paper 
+                        key={segment.id} 
+                        elevation={1} 
                         sx={{ 
-                          '& .MuiOutlinedInput-root': {
-                            fontSize: '1rem',
-                            lineHeight: 1.6
+                          p: 3, 
+                          border: '1px solid #e5e7eb',
+                          position: 'relative',
+                          '&:hover': {
+                            boxShadow: 2
                           }
                         }}
-                      />
-                    </Paper>
-                  ))}
-                </Box>
-              )}
-            </CardContent>
-          </Card>
+                      >
+                        {/* Segment number badge - positioned at top right */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: 16,
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                            borderRadius: '12px',
+                            px: 2,
+                            py: 0.5,
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            boxShadow: 1
+                          }}
+                        >
+                          #{index + 1}
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <FormControl size="small" sx={{ minWidth: 120 }}>
+                              <InputLabel>Speaker</InputLabel>
+                              <Select
+                                value={segment.speaker}
+                                label="Speaker"
+                                onChange={(e) => handleSpeakerChange(segment.id, e.target.value)}
+                              >
+                                <MenuItem value="Speaker 1">Speaker 1</MenuItem>
+                                <MenuItem value="Speaker 2">Speaker 2</MenuItem>
+                                <MenuItem value="Speaker 3">Speaker 3</MenuItem>
+                              </Select>
+                            </FormControl>
+                            <Chip 
+                              icon={<Person />}
+                              label={`${formatTime(segment.start)} - ${formatTime(segment.end)}`}
+                              size="small"
+                              variant="outlined"
+                              sx={{ backgroundColor: '#f5f5f5' }}
+                            />
+                          </Box>
+                          <Button
+                            size="small"
+                            startIcon={<PlayArrow />}
+                            variant="outlined"
+                          >
+                            Play Segment
+                          </Button>
+                        </Box>
+                        
+                        <TextField
+                          fullWidth
+                          multiline
+                          minRows={2}
+                          value={segment.text}
+                          onChange={(e) => handleSegmentEdit(segment.id, e.target.value)}
+                          variant="outlined"
+                          sx={{ 
+                            '& .MuiOutlinedInput-root': {
+                              fontSize: '1rem',
+                              lineHeight: 1.6
+                            }
+                          }}
+                        />
+                      </Paper>
+                    ))}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

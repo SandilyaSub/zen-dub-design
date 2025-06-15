@@ -19,10 +19,16 @@ const Header = () => {
       elevation={0}
       sx={{ 
         background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-        py: 1
+        height: 100, // Fixed height for consistency
+        minHeight: 100
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <Toolbar sx={{ 
+        justifyContent: 'space-between',
+        height: '100%',
+        minHeight: 100,
+        px: 3
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Translate sx={{ fontSize: 28, color: 'white' }} />
           <Box>
