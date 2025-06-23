@@ -32,7 +32,23 @@ const Header = () => {
         px: 2
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <SidebarTrigger />
+          <Box sx={{ 
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            '& svg': { 
+              color: 'white !important',
+              fill: 'white !important'
+            },
+            '& button': {
+              color: 'white !important',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }
+          }}>
+            <SidebarTrigger />
+          </Box>
           <Translate sx={{ fontSize: 24, color: 'white' }} />
           <Box>
             <Typography 
