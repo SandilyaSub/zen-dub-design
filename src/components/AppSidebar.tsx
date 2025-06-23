@@ -1,5 +1,5 @@
 
-import { Lightbulb, Mic, Plus } from 'lucide-react';
+import { Lightbulb, Mic } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Sidebar,
